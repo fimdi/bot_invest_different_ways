@@ -1,0 +1,22 @@
+{
+  "name": "bot_investing_different_ways",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --ignore data/ index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vk-io/hear": "^1.1.0",
+    "@vk-io/scenes": "^1.2.0",
+    "@vk-io/session": "^2.2.0",
+    "dotenv": "^16.0.3",
+    "fs": "^0.0.1-security",
+    "nodemon": "^2.0.22",
+    "vk-io": "^4.8.1",
+    "vk-io-question": "^3.1.1",
+    "yoomoney-sdk": "^1.5.5"
+  }
+}
