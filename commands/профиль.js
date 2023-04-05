@@ -2,7 +2,7 @@ const utils = require('../utils.js');
 
 const profile = (context, users) => {
     let incomeDayPercentage = users[context.senderId].investmentMethod?.incomeDayPercentage;
-    let term = users[context.senderId].investmentMethod.term;
+    let term = users[context.senderId].investmentMethod?.term;
     
     context.send(
 `🖥ПРОФИЛЬ
