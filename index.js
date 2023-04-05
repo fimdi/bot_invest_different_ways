@@ -9,7 +9,6 @@ const steal = require('./commands/_функция кражи.js');
 const invest = require('./commands/_функция инвестирования.js');
 
 const { VK, Keyboard } = require('vk-io');
-const { QuestionManager } = require('vk-io-question');
 
 const vk = new VK({
 	token: config.group_token,
@@ -30,9 +29,6 @@ const startProfile = JSON.stringify({
 	"attemptsSteal": 1,
 	"ban": false
 });
-
-const questionManager = new QuestionManager();
-vk.updates.use(questionManager.middleware);
 
 vk.updates.on('message_new', async (context, next) => 
 {
