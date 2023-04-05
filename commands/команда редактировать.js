@@ -1,62 +1,77 @@
 const editCommand = async (context, arr, users, startProfile, vk) => 
 {
+    const [ , id, command, number] = arr;
+    
     if (arr.length == 1) {
         return context.send(
 `ред {ID} {команда} {число}
 
 Команды:
-обнулить
+
 пополнить
 инвестировать
 баланс
+
+бан
+разбан
+обнулить
 
 Например:
 ред 566928444 пополнить 10
 ред 566928444 обнулить
 `);
     }
-    if ( !(arr[1] in users) ) 
+    if ( !(id in users) ) 
     {
         return context.send('Такого id нету');
     }
-    if ( arr[2] == "обнулить" )
+    if ( command == "обнулить" )
     {
-        let id = +arr[1];
         let [userData] = await vk.api.users.get({user_id: id});
         
         users[id] = JSON.parse(startProfile);
         users[id].name = userData.first_name;
             
-        return context.send("Успешно");
+        return context.send(`Пользователь с ID ${id} обнулён`);
     }
-    if (arr[2] != "пополнить" && arr[2] != "инвестировать" && arr[2] != "баланс")
+    if ( command == "бан" )
     {
-        return context.send(`ред ${arr[1]} {команда} {число}`);
+        users[id].ban = true;
+            
+        return context.send(`Пользователь с ID ${id} забанен`);
     }
-    if ( isNaN(arr[3]) ) 
+    if ( command == "разбан" )
     {
-        return context.send(`ред ${arr[1]} ${arr[2]} {число}`);
+        users[id].ban = false;
+            
+        return context.send(`Пользователь с ID ${id} разбанен`);
+    }
+    if (command != "пополнить" && command != "инвестировать" && command != "баланс")
+    {
+        return context.send(`ред ${id} {команда} {число}`);
+    }
+    if ( isNaN(number) )
+    {
+        return context.send(`ред ${id} ${command} {число}`);
     }
     
-    if ( arr[2] == "пополнить" )
+    if ( command == "пополнить" )
     {
-        users[arr[1]].replenished += +arr[3];
-        users[arr[1]].balanceForInvestment += +arr[3];
+        users[id].replenished += number;
+        users[id].balanceForInvestment += number;
 
-        return context.send("Успешно");
+        return context.send(`Пользователю с ID ${id} на баланс для инвестирования было зачислено ${number}`);
     }
-    if ( arr[2] == "баланс" )
+    if ( command == "баланс" )
     {
-        users[arr[1]].balanceForWithdrawal += +arr[3];
-        return context.send("Успешно");
+        users[id].balanceForWithdrawal += number;
+        return context.send(`Пользователю с ID ${id} на баланс для вывода было зачислено ${number}`);
     }
-    if ( arr[2] == "инвестировать" )
+    if ( command == "инвестировать" )
     {
-        users[arr[1]].invested += +arr[3];
-        return context.send("Успешно");
+        users[id].invested += number;
+        return context.send(`Пользователю с ID ${id} было инвестировано ${number}`);
     }
-
-    context.send("test");
 }
 
 module.exports = editCommand;
