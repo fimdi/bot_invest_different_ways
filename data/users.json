@@ -1,3 +1,16 @@
 {
-	
+	"566928444": {
+		"name": "Виктор",
+		"balanceForWithdrawal": 0,
+		"balanceForInvestment": 0,
+		"invested": 0,
+		"investmentMethod": null,
+		"usedInvestmentMethods": [],
+		"withdrawn": 0,
+		"replenished": 0,
+		"stolenFromUser": 0,
+		"stolenByUser": 0,
+		"attemptsSteal": 1,
+		"ban": false
+	}
 }

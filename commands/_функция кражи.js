@@ -1,14 +1,11 @@
-const steal = (context, users, data, vk) =>
+const steal = async (context, users, data, vk, id) =>
 {
-    let id = context.text;
     let sum = users[context.senderId].invested * 0.1; // 10% от инвестирования
 
-	if (users[context.senderId].invested == 0) return context.send("Для кражи необходимо инвестировать");
+    if (users[context.senderId].invested == 0) return context.send("Для кражи необходимо инвестировать");
     if (users[context.senderId].attemptsSteal == 0) return context.send("На сегодня у вас осталось 0 попыток");
-    if ( !(id in users) ) return context.send("Такого ID нет");
     if ( users[id].balanceForWithdrawal == 0 ) return context.send("У этого пользователя нет денег");
-
-    if (users[id].balanceForWithdrawal < sum) sum = users[id].balanceForWithdrawal;
+    if ( users[id].balanceForWithdrawal < sum ) sum = users[id].balanceForWithdrawal;
     
     users[id].balanceForWithdrawal -= sum;
     users[id].stolenFromUser += sum;

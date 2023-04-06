@@ -8,13 +8,14 @@ const createCommand = require('./commands/команда создать.js');
 const steal = require('./commands/_функция кражи.js');
 const invest = require('./commands/_функция инвестирования.js');
 
-const { VK, Keyboard } = require('vk-io');
+const { VK, Keyboard, resolveResource } = require('vk-io');
 
 const vk = new VK({
 	token: config.group_token,
 	pollingGroupId: config.group_id,
 	apiMode: 'parallel_selected'
 });
+
 const startProfile = JSON.stringify({
 	"name": "Пользователь",
 	"balanceForWithdrawal": 0,
@@ -35,6 +36,7 @@ vk.updates.on('message_new', async (context, next) =>
 	if (!users[context.senderId]) 
 	{
 		let [userData] = await vk.api.users.get({user_id: context.senderId});
+		
 		users[context.senderId] = JSON.parse(startProfile);
 		users[context.senderId].name = userData.first_name;
 	}
@@ -43,6 +45,7 @@ vk.updates.on('message_new', async (context, next) =>
 });
 
 const DAY = 86400000;
+
 function everyDay()
 {
 	let date = new Date();
@@ -142,33 +145,46 @@ let cache = {};
 
 vk.updates.on('message_new', async (context) => 
 {
+	let text = context.text;
+	let arr = text.split(" ");
+	let indexInCommands = 
+	commands.findIndex(command => command.regexp.test(text) && context.messagePayload?.command == command.payload); // индекс команды
+
 	if (context.senderId in cache)
 	{
 		context.state.user = cache[context.senderId];
 		delete cache[context.senderId];
 	}
-	
-	let text = context.text;
-	let arr = text.split(" ");
-
 	if ( config.owners.includes(context.senderId) )
 	{
 		if ( /^ред$/i.test(arr[0]) ) return editCommand(context, arr, users, startProfile, vk);
 		if ( /^создать$/i.test(arr[0]) ) return createCommand(context, arr, users, startProfile, vk);
 	}
-	
-	if ( !isNaN(text) ) // если пользователь отправил число
-	{
-		if ( context.state.user?.pastMessage == "инвестировать" ) return invest(context, users, data);
-		if ( context.state.user?.pastMessage == "украсть" ) return steal(context, users, data, vk);
-	};
-
-	let indexInCommands = 
-	commands.findIndex(command => command.regexp.test(text) && 
-								  context.messagePayload?.command == command.payload); // индекс команды
+	if ( !isNaN(text) && context.state.user?.pastMessage == "инвестировать") return invest(context, users, data);
 	
 	if ( indexInCommands == -1 )
 	{
+		if ( context.state.user?.pastMessage == "украсть" )
+		{
+			if ( text in users ) return steal(context, users, data, vk, text);
+
+			const resource = await resolveResource({
+            	api: vk.api,
+            	resource: text
+        	})
+			.catch((err) =>
+			{
+				context.send("Пользователь не найден");
+			});
+
+			if (resource?.type == 'user')
+			{
+				if (resource.id in users) return steal(context, users, data, vk, resource.id);
+
+				return context.send("Данный пользователь не зарегистрирован в боте");
+			}
+		}
+
 		return context.send("Такой команды нет",
 		{
 			keyboard: Keyboard.builder()
@@ -182,9 +198,7 @@ vk.updates.on('message_new', async (context) =>
 
 	commands[indexInCommands].function(context, users, data); 
 
-	// если команда "инвестировать"
 	if ( indexInCommands == 2 ) cache[context.senderId] = { pastMessage: "инвестировать" }
-	// если команда "украсть"
 	if ( indexInCommands == 3 ) cache[context.senderId] = { pastMessage: "украсть" }
 });
 
