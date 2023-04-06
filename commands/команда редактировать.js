@@ -1,6 +1,7 @@
 const editCommand = async (context, arr, users, startProfile, vk) => 
 {
-    const [ , id, command, number] = arr;
+    const [ , id, command] = arr;
+    const number = Number( arr[3] );
     
     if (arr.length == 1) {
         return context.send(
@@ -11,6 +12,7 @@ const editCommand = async (context, arr, users, startProfile, vk) =>
 пополнить
 инвестировать
 баланс
+вывести
 
 бан
 разбан
@@ -46,7 +48,7 @@ const editCommand = async (context, arr, users, startProfile, vk) =>
             
         return context.send(`Пользователь с ID ${id} разбанен`);
     }
-    if (command != "пополнить" && command != "инвестировать" && command != "баланс")
+    if (command != "пополнить" && command != "инвестировать" && command != "баланс" && command != "вывести")
     {
         return context.send(`ред ${id} {команда} {число}`);
     }
@@ -61,6 +63,13 @@ const editCommand = async (context, arr, users, startProfile, vk) =>
         users[id].balanceForInvestment += number;
 
         return context.send(`Пользователю с ID ${id} на баланс для инвестирования было зачислено ${number}`);
+    }
+    if ( command == "вывести" )
+    {
+        users[id].balanceForWithdrawal -= number;
+        users[id].withdrawn += number;
+
+        return context.send(` У пользователя с ID ${id} было выведено ${number}`);
     }
     if ( command == "баланс" )
     {

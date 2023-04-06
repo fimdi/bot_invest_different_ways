@@ -60,6 +60,7 @@ function everyDay()
 		{
 			let multiplier = (day > users[user].investmentMethod.daysLeft ? users[user].investmentMethod.daysLeft : day);
 			let res = (users[user].invested * users[user].investmentMethod.incomeDayPercentage / 100) - users[user].investmentMethod.taxDayRubles;
+			res = utils.rounding(res);
 			
 			users[user].balanceForWithdrawal += res * multiplier;
 			users[user].investmentMethod.daysLeft -= multiplier;

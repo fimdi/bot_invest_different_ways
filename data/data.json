@@ -1,7 +1,7 @@
 {
-	"onlineDate": 1680642000000,
+	"onlineDate": 1680728400000,
 	"statistics": {
-		"incomeFromThefts": 0
+		"incomeFromThefts": 5
 	},
 	"investmentMethods": {
 		"1": {
@@ -41,7 +41,7 @@
 		},
 		"8": {
 			"incomeDayPercentage": 12,
-			"taxDayRubles": 0.1,
+			"taxDayRubles": 0.5,
 			"term": 9
 		},
 		"9": {

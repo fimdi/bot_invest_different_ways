@@ -12,17 +12,17 @@ async function save(way, data)
   	fs.writeFileSync(way, JSON.stringify(data, null, '\t'));
 }
 
-// function prettify(num) 
-// {
-//   	let a = formatter.format(num / 1000);
-//   	a = a.replace(/[,]/g, " ");
-//   	return a.replace(".", ",");
-// }
-
 function prettify(num) 
 {
-  	return formatter.format(num);
+  	let a = formatter.format(num);
+  	a = a.replace(/[,]/g, " ");
+  	return a.replace(".", ",");
 }
+
+// function prettify(num) 
+// {
+//   	return formatter.format(num);
+// }
 
 function getTop(users, parameter,  text)
 {
@@ -49,6 +49,12 @@ function lineEnding(n, text_forms) {
     return text_forms[2];
 }
 
+function rounding(number)
+{
+    return Math.floor(number * 100) / 100;
+}
+
+exports.rounding = rounding;
 exports.lineEnding = lineEnding;
 exports.getTop = getTop;
 exports.random = random;
