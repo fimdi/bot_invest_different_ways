@@ -58,6 +58,16 @@
 			"incomeDayPercentage": 1,
 			"taxDayRubles": 1000000,
 			"term": 1
+		},
+		"12": {
+			"incomeDayPercentage": 3,
+			"taxDayRubles": 0,
+			"term": 33
+		},
+		"13": {
+			"incomeDayPercentage": 4,
+			"taxDayRubles": 1,
+			"term": 33
 		}
 	}
 }

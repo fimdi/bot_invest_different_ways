@@ -9,12 +9,16 @@ const steal = require('./function/функция кражи.js');
 const invest = require('./function/функция инвестирования.js');
 
 const { VK, Keyboard, resolveResource } = require('vk-io');
+const { QuestionManager } = require('vk-io-question');
 
 const vk = new VK({
 	token: config.group_token,
 	pollingGroupId: config.group_id,
 	apiMode: 'parallel_selected'
 });
+
+const questionManager = new QuestionManager();
+vk.updates.use(questionManager.middleware);
 
 const startProfile = JSON.stringify({
 	"name": "Пользователь",
@@ -163,7 +167,7 @@ vk.updates.on('message_new', async (context) =>
 	if ( config.owners.includes(context.senderId) )
 	{
 		if ( /^ред$/i.test(arr[0]) ) return editCommand(context, arr, users, startProfile, vk);
-		if ( /^создать$/i.test(arr[0]) ) return createCommand(context, arr, users, startProfile, vk);
+		if ( /^создать$/i.test(arr[0]) ) return createCommand(context, arr, users, startProfile, vk, data);
 	}
 	if ( !isNaN(text) && context.state.user?.pastMessage == "инвестировать") return invest(context, users, data);
 	if ( text.toLowerCase() == "да" &&  context.state.user?.pastMessage == "репополнить") 
