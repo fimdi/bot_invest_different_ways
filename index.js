@@ -3,10 +3,10 @@ const data = require('./data/data.json');
 const config = require('./config.json');
 const utils = require('./utils.js');
 
-const editCommand = require('./commands/команда редактировать.js');
-const createCommand = require('./commands/команда создать.js');
-const steal = require('./commands/_функция кражи.js');
-const invest = require('./commands/_функция инвестирования.js');
+const editCommand = require('./function/команда редактировать.js');
+const createCommand = require('./function/команда создать.js');
+const steal = require('./function/функция кражи.js');
+const invest = require('./function/функция инвестирования.js');
 
 const { VK, Keyboard, resolveResource } = require('vk-io');
 
@@ -94,7 +94,7 @@ const commands = [
 		function: require('./commands/украсть.js')
 	},
 	{
-		regexp: /^⬇Пополнить|Пополнить$/i,
+		regexp: /^⬇Пополнить$|^Пополнить$/i,
 		function: require('./commands/пополнить.js')
 	},
 	{
@@ -139,6 +139,10 @@ const commands = [
 		regexp: /^ЮMoney$/i,
 		function: require('./commands/вывод ЮMoney.js'),
 		payload: "вывод"
+	},
+	{
+		regexp: /^🔁Репополнить|Репополнить$/i,
+		function: require('./commands/репополнить.js')
 	}
 ];
 
@@ -162,6 +166,15 @@ vk.updates.on('message_new', async (context) =>
 		if ( /^создать$/i.test(arr[0]) ) return createCommand(context, arr, users, startProfile, vk);
 	}
 	if ( !isNaN(text) && context.state.user?.pastMessage == "инвестировать") return invest(context, users, data);
+	if ( text.toLowerCase() == "да" &&  context.state.user?.pastMessage == "репополнить") 
+	{
+		if (users[context.senderId].balanceForWithdrawal == 0) return context.send("На балансе для вывода 0 ₽");
+
+		users[context.senderId].balanceForInvestment += users[context.senderId].balanceForWithdrawal;
+		users[context.senderId].balanceForWithdrawal = 0;
+
+		return context.send("Деньги успешно переведены с баланса для вывода на баланс для инвестрования");
+	}
 	
 	if ( indexInCommands == -1 )
 	{
@@ -199,8 +212,9 @@ vk.updates.on('message_new', async (context) =>
 
 	commands[indexInCommands].function(context, users, data); 
 
-	if ( indexInCommands == 2 ) cache[context.senderId] = { pastMessage: "инвестировать" }
-	if ( indexInCommands == 3 ) cache[context.senderId] = { pastMessage: "украсть" }
+	if ( /^📑Инвестировать|Инвестировать$/i.test(text) ) cache[context.senderId] = { pastMessage: "инвестировать" }
+	if ( /^🖐Украсть|Украсть$/i.test(text) ) cache[context.senderId] = { pastMessage: "украсть" }
+	if ( /^🔁Репополнить|Репополнить$/i.test(text) ) cache[context.senderId] = { pastMessage: "репополнить" }
 });
 
 setInterval(() =>

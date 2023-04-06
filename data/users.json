@@ -44,7 +44,7 @@
 	"566928444": {
 		"name": "Виктор",
 		"balanceForWithdrawal": 0,
-		"balanceForInvestment": 0,
+		"balanceForInvestment": 20,
 		"invested": 0,
 		"investmentMethod": null,
 		"usedInvestmentMethods": [],

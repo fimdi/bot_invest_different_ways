@@ -30,6 +30,11 @@ const menu = (context) => {
             color: Keyboard.POSITIVE_COLOR
         })
         .textButton({
+            label: '🔁Репополнить',
+            color: Keyboard.POSITIVE_COLOR
+        })
+        .row()
+        .textButton({
             label: '⬆Вывести',
             color: Keyboard.POSITIVE_COLOR
         })
