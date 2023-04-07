@@ -11,7 +11,8 @@
 		"stolenFromUser": 0,
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
-		"ban": false
+		"ban": false,
+		"protection": false
 	},
 	"436119931": {
 		"name": "Влад",
@@ -25,7 +26,8 @@
 		"stolenFromUser": 0,
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
-		"ban": false
+		"ban": false,
+		"protection": false
 	},
 	"460887300": {
 		"name": "Никита",
@@ -39,21 +41,29 @@
 		"stolenFromUser": 0,
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
-		"ban": false
+		"ban": false,
+		"protection": false
 	},
 	"566928444": {
 		"name": "Виктор",
-		"balanceForWithdrawal": 0,
-		"balanceForInvestment": 20,
-		"invested": 0,
-		"investmentMethod": null,
+		"balanceForWithdrawal": 10,
+		"balanceForInvestment": 0,
+		"invested": 10,
+		"investmentMethod": {
+			"id": 1,
+			"incomeDayPercentage": 5.6,
+			"taxDayRubles": 0,
+			"term": 15,
+			"daysLeft": 15
+		},
 		"usedInvestmentMethods": [],
 		"withdrawn": 0,
-		"replenished": 0,
+		"replenished": 10,
 		"stolenFromUser": 0,
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
-		"ban": false
+		"ban": false,
+		"protection": true
 	},
 	"574273208": {
 		"name": "John",
@@ -67,11 +77,12 @@
 		"stolenFromUser": 0,
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
-		"ban": false
+		"ban": false,
+		"protection": false
 	},
 	"604305357": {
 		"name": "Магомед",
-		"balanceForWithdrawal": 0,
+		"balanceForWithdrawal": 11.5,
 		"balanceForInvestment": 0,
 		"invested": 100,
 		"investmentMethod": {
@@ -79,15 +90,16 @@
 			"incomeDayPercentage": 12,
 			"taxDayRubles": 0.5,
 			"term": 9,
-			"daysLeft": 8
+			"daysLeft": 7
 		},
 		"usedInvestmentMethods": [],
 		"withdrawn": 16.5,
 		"replenished": 100,
 		"stolenFromUser": 0,
 		"stolenByUser": 10,
-		"attemptsSteal": 0,
-		"ban": false
+		"attemptsSteal": 1,
+		"ban": false,
+		"protection": false
 	},
 	"629186838": {
 		"name": "Pronekropros",
@@ -101,7 +113,8 @@
 		"stolenFromUser": 0,
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
-		"ban": false
+		"ban": false,
+		"protection": false
 	},
 	"661426159": {
 		"name": "Денис",
@@ -121,7 +134,8 @@
 		"stolenFromUser": 10,
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
-		"ban": false
+		"ban": false,
+		"protection": false
 	},
 	"742967718": {
 		"name": "Денис",
@@ -135,6 +149,7 @@
 		"stolenFromUser": 0,
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
-		"ban": false
+		"ban": false,
+		"protection": false
 	}
 }

@@ -32,8 +32,14 @@ const startProfile = JSON.stringify({
 	"stolenFromUser": 0,
 	"stolenByUser": 0,
 	"attemptsSteal": 1,
-	"ban": false
+	"ban": false,
+	"protection": false
 });
+
+for (key in users)
+{
+	if ( !users[key].hasOwnProperty("protection") ) users[key].protection = false;
+}
 
 vk.updates.on('message_new', async (context, next) => 
 {
@@ -62,6 +68,7 @@ function everyDay()
 	for (user in users)
 	{
 		if( !users[user].attemptsSteal ) users[user].attemptsSteal = 1;
+		if ( users[user].protection ) users[user].protection = false;
 
 		if (users[user].investmentMethod != null) // если у пользователя есть способ инвестирования
 		{
@@ -147,6 +154,10 @@ const commands = [
 	{
 		regexp: /^🔁Репополнить|Репополнить$/i,
 		function: require('./commands/репополнить.js')
+	},
+	{
+		regexp: /^🔒Защитить средства|Защитить средства$/i,
+		function: require('./commands/защита средств.js')
 	}
 ];
 

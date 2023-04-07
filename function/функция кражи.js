@@ -4,6 +4,7 @@ const steal = async (context, users, data, vk, id) =>
 
     if (users[context.senderId].invested == 0) return context.send("Для кражи необходимо инвестировать");
     if (users[context.senderId].attemptsSteal == 0) return context.send("На сегодня у вас осталось 0 попыток");
+    if ( users[id].protection ) return context.send("Этот пользователь защищён от краж до 00:00");
     if ( users[id].balanceForWithdrawal == 0 ) return context.send("У этого пользователя нет денег");
     if ( users[id].balanceForWithdrawal < sum ) sum = users[id].balanceForWithdrawal;
     

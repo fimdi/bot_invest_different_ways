@@ -1,34 +1,43 @@
 const utils = require('../utils.js');
+const { Keyboard } = require('vk-io');
 
 const profile = (context, users) => {
-    let incomeDayPercentage = users[context.senderId].investmentMethod?.incomeDayPercentage;
-    let term = users[context.senderId].investmentMethod?.term;
+    let id = context.senderId;
+    let incomeDayPercentage = users[id].investmentMethod?.incomeDayPercentage;
+    let term = users[id].investmentMethod?.term;
     
     context.send(
 `🖥ПРОФИЛЬ
-ID: ${context.senderId}
+ID: ${id}
         
 💰БАЛАНС
-Для вывода: ${ utils.prettify(users[context.senderId].balanceForWithdrawal) } ₽
-Для инвестирования: ${ utils.prettify(users[context.senderId].balanceForInvestment) } ₽
+Для вывода: ${ utils.prettify(users[id].balanceForWithdrawal) } ₽
+Для инвестирования: ${ utils.prettify(users[id].balanceForInvestment) } ₽
         
 📑ИНВЕСТИРОВАННО
--> ${ utils.prettify(users[context.senderId].invested) } ₽
+-> ${ utils.prettify(users[id].invested) } ₽
         
 ⚙СПОСОБ ИНВЕСТИЦИИ
-${users[context.senderId].investmentMethod === null ? "Отсутствует" :
-`№ ${users[context.senderId].investmentMethod.id}
+${users[id].investmentMethod === null ? "Отсутствует" :
+`№ ${users[id].investmentMethod.id}
 ${incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs(incomeDayPercentage)} %
-Налог в день: ${users[context.senderId].investmentMethod.taxDayRubles} ₽
+Налог в день: ${users[id].investmentMethod.taxDayRubles} ₽
 Срок ${term} ${ utils.lineEnding(term, ["день", "дня", "дней"]) }
 
-Осталось дней: ${users[context.senderId].investmentMethod.daysLeft}`}
+Осталось дней: ${users[id].investmentMethod.daysLeft}`}
 
 🗄СТАТИСТИКА
-Выведенно: ${ utils.prettify(users[context.senderId].withdrawn) } ₽
-Пополненно: ${ utils.prettify(users[context.senderId].replenished) } ₽
-Украдено у вас: ${ utils.prettify(users[context.senderId].stolenFromUser) } ₽
-Украли вы: ${ utils.prettify(users[context.senderId].stolenByUser) } ₽`);
+Выведенно: ${ utils.prettify(users[id].withdrawn) } ₽
+Пополненно: ${ utils.prettify(users[id].replenished) } ₽
+Украдено у вас: ${ utils.prettify(users[id].stolenFromUser) } ₽
+Украли вы: ${ utils.prettify(users[id].stolenByUser) } ₽`, users[id].balanceForWithdrawal && !users[id].protection ? {
+    keyboard: Keyboard.builder()
+    .textButton({
+        label: '🔒Защитить средства',
+        color: Keyboard.POSITIVE_COLOR
+    })
+    .inline()
+} : {});
 }
 
 module.exports = profile;
