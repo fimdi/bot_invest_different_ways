@@ -170,6 +170,10 @@ vk.updates.on('message_new', async (context) =>
 	let indexInCommands = 
 	commands.findIndex(command => command.regexp.test(text) && context.messagePayload?.command == command.payload); // индекс команды
 
+	if (context.text == "Начать" && context.messagePayload?.command == 'start')
+	{
+		return commands[0].function(context);
+	}
 	if (context.senderId in cache)
 	{
 		context.state.user = cache[context.senderId];
