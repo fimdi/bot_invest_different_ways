@@ -1,7 +1,9 @@
 {
 	"onlineDate": 1681246800000,
 	"statistics": {
-		"incomeFromThefts": 6.5
+		"incomeFromThefts": 6.5,
+		"newUsers": 1,
+		"weWork": 1
 	},
 	"investmentMethods": {
 		"1": {

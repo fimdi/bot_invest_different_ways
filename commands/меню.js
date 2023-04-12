@@ -45,6 +45,10 @@ const menu = (context) => {
             label: '👀Топ',
             color: Keyboard.PRIMARY_COLOR
         })
+        .textButton({
+            label: '💻Статистика бота',
+            color: Keyboard.PRIMARY_COLOR
+        })
     });
 }
 

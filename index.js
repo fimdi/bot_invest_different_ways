@@ -49,6 +49,7 @@ vk.updates.on('message_new', async (context, next) =>
 		
 		users[context.senderId] = JSON.parse(startProfile);
 		users[context.senderId].name = userData.first_name;
+		data.statistics.newUsers += 1;
 	}
 
 	return next();
@@ -64,6 +65,9 @@ function everyDay()
 
 	if (day < 1) return setTimeout(everyDay, +tomorrow - Date.now())
 	//
+	
+	data.statistics.newUsers = 0;
+	data.statistics.weWork += 1;
 
 	for (user in users)
 	{
@@ -157,6 +161,10 @@ const commands = [
 	{
 		regexp: /^🔒Защитить средства|Защитить средства$/i,
 		function: require('./commands/защита средств.js')
+	},
+	{
+		regexp: /^💻Статистика бота|Статистика бота$/i,
+		function: require('./commands/статистика бота.js')
 	}
 ];
 
