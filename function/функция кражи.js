@@ -1,6 +1,8 @@
+const utils = require('../utils.js');
+
 const steal = async (context, users, data, vk, id) =>
 {
-    let sum = users[context.senderId].invested * 0.1; // 10% от инвестирования
+    let sum = utils.rounding( users[context.senderId].invested * 0.1 ); // 10% от инвестирования
 
     if (users[context.senderId].invested == 0) return context.send("Для кражи необходимо инвестировать");
     if (users[context.senderId].attemptsSteal == 0) return context.send("На сегодня у вас осталось 0 попыток");

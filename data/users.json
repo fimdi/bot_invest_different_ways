@@ -46,7 +46,7 @@
 	},
 	"566928444": {
 		"name": "Виктор",
-		"balanceForWithdrawal": 11.120000000000001,
+		"balanceForWithdrawal": 13.3,
 		"balanceForInvestment": 0,
 		"invested": 10,
 		"investmentMethod": {
@@ -54,16 +54,16 @@
 			"incomeDayPercentage": 5.6,
 			"taxDayRubles": 0,
 			"term": 15,
-			"daysLeft": 13
+			"daysLeft": 10
 		},
 		"usedInvestmentMethods": [],
 		"withdrawn": 0,
 		"replenished": 10,
 		"stolenFromUser": 0,
-		"stolenByUser": 0,
-		"attemptsSteal": 1,
+		"stolenByUser": 1,
+		"attemptsSteal": 0,
 		"ban": false,
-		"protection": true
+		"protection": false
 	},
 	"574273208": {
 		"name": "John",
@@ -82,7 +82,7 @@
 	},
 	"604305357": {
 		"name": "Магомед",
-		"balanceForWithdrawal": 34.5,
+		"balanceForWithdrawal": 68,
 		"balanceForInvestment": 0,
 		"invested": 100,
 		"investmentMethod": {
@@ -90,12 +90,12 @@
 			"incomeDayPercentage": 12,
 			"taxDayRubles": 0.5,
 			"term": 9,
-			"daysLeft": 5
+			"daysLeft": 2
 		},
 		"usedInvestmentMethods": [],
 		"withdrawn": 16.5,
 		"replenished": 100,
-		"stolenFromUser": 0,
+		"stolenFromUser": 1,
 		"stolenByUser": 10,
 		"attemptsSteal": 1,
 		"ban": false,
