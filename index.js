@@ -8,6 +8,7 @@ const createCommand = require('./function/команда создать.js');
 const steal = require('./function/функция кражи.js');
 const invest = require('./function/функция инвестирования.js');
 
+var CronJob = require('cron').CronJob;
 const { VK, Keyboard, resolveResource } = require('vk-io');
 const { QuestionManager } = require('vk-io-question');
 
@@ -43,7 +44,7 @@ for (key in users)
 
 vk.updates.on('message_new', async (context, next) => 
 {
-	if (!users[context.senderId]) 
+	if ( !users[context.senderId] ) 
 	{
 		let [userData] = await vk.api.users.get({user_id: context.senderId});
 		
@@ -59,13 +60,9 @@ const DAY = 86400000;
 
 function everyDay()
 {
-	let date = new Date();
-	let tomorrow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
 	let day = Math.floor( (Date.now() - data.onlineDate) / DAY );
+	if ( day < 1 ) return;
 
-	if (day < 1) return setTimeout(everyDay, +tomorrow - Date.now())
-	//
-	
 	data.statistics.newUsers = 0;
 	data.statistics.weWork += 1;
 
@@ -74,21 +71,26 @@ function everyDay()
 		if( !users[user].attemptsSteal ) users[user].attemptsSteal = 1;
 		if ( users[user].protection ) users[user].protection = false;
 
-		if (users[user].investmentMethod != null) // если у пользователя есть способ инвестирования
+		if ( users[user].investmentMethod != null ) // если у пользователя есть способ инвестирования
 		{
 			let multiplier = (day > users[user].investmentMethod.daysLeft ? users[user].investmentMethod.daysLeft : day);
-			let res = (users[user].invested * users[user].investmentMethod.incomeDayPercentage / 100) - users[user].investmentMethod.taxDayRubles;
+			let res = users[user].invested * users[user].investmentMethod.incomeDayPercentage / 100 - users[user].investmentMethod.taxDayRubles;
 			
-			users[user].balanceForWithdrawal = utils.rounding(users[user].balanceForWithdrawal + res * multiplier);
+			users[user].balanceForWithdrawal = utils.rounding( users[user].balanceForWithdrawal + res * multiplier );
 			users[user].investmentMethod.daysLeft -= multiplier;
 		}
 	}
 
-	//
+	let date = new Date();
 	data.onlineDate = Number( new Date(date.getFullYear(), date.getMonth(), date.getDate()) );
-	setTimeout(everyDay, DAY);
 }
 everyDay();
+
+const job = new CronJob('00 00 00 * * *', async () => 
+{
+	everyDay();
+});
+job.start();
 
 const commands = [
 	{

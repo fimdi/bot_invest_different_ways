@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cron": "^2.3.0",
     "dotenv": "^16.0.3",
     "fs": "^0.0.1-security",
     "keksik-vk-api": "^1.0.2",

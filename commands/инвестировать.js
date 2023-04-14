@@ -41,6 +41,8 @@ const invest = (context, users, data) => {
         
 Всего для вас доступно: ${available} ${ utils.lineEnding(available, ["способ", "способа", "способов"]) }
 
+ПОВТОРНАЯ ИНВЕСТИЦИЯ ОБНУЛЯЕТ ПРОШЛУЮ ИНВЕСТИЦИЮ
+
 ${generateInvestmentMethods(context, users, data)}`);
 }
 

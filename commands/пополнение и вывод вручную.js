@@ -1,12 +1,13 @@
 const { Keyboard } = require('vk-io');
+const config = require('../config.json');
 
 const manually = (context) => 
 {
-    context.send("✉ПИШИТЕ —> [id566928444|админу]", {
+    context.send(`✉ПИШИТЕ —> [id${ config.owners[0] }|админу]`, {
     keyboard: Keyboard.builder()
         .urlButton({
             label: 'Админ',
-            url: 'https://vk.com/gfk00'
+            url: `https://vk.com/id${ config.owners[0] }`
         })
         .inline()
     })

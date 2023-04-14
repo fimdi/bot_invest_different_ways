@@ -12,9 +12,9 @@ const botStatistics = (context, users, data) =>
 👨Пользователей: ${Object.keys(users).length}
 👥Новых за сегодня: ${data.statistics.newUsers}
     
-📥Пополнено: ${replenished} ₽
-📤Выведено: ${withdrawn} ₽
-🏦Инвестировано: ${invested} ₽
+📥Пополнено: ${ utils.rounding(replenished) } ₽
+📤Выведено: ${ utils.rounding(withdrawn) } ₽
+🏦Инвестировано: ${ utils.rounding(invested) } ₽
     
 🕙Мы работаем: ${data.statistics.weWork} ${ utils.lineEnding(data.statistics.weWork, ["день", "дня", "дней"]) }`);
 }

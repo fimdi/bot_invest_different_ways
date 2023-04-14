@@ -76,7 +76,7 @@
 	},
 	"604305357": {
 		"name": "Магомед",
-		"balanceForWithdrawal": 68,
+		"balanceForWithdrawal": 91,
 		"balanceForInvestment": 0,
 		"invested": 100,
 		"investmentMethod": {
@@ -84,7 +84,7 @@
 			"incomeDayPercentage": 12,
 			"taxDayRubles": 0.5,
 			"term": 9,
-			"daysLeft": 2
+			"daysLeft": 0
 		},
 		"usedInvestmentMethods": [],
 		"withdrawn": 16.5,
