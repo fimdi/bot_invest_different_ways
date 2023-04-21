@@ -1,3 +1,5 @@
+const utils = require('../utils.js');
+
 const editCommand = async (context, arr, users, startProfile, vk) => 
 {
     const [ , id, command] = arr;
@@ -59,26 +61,26 @@ const editCommand = async (context, arr, users, startProfile, vk) =>
     
     if ( command == "пополнить" )
     {
-        users[id].replenished += number;
-        users[id].balanceForInvestment += number;
+        users[id].replenished = utils.rounding(users[id].replenished + number);
+        users[id].balanceForInvestment = utils.rounding(users[id].balanceForInvestment + number);
 
         return context.send(`Пользователю с ID ${id} на баланс для инвестирования было зачислено ${number}`);
     }
     if ( command == "вывести" )
     {
-        users[id].balanceForWithdrawal -= number;
-        users[id].withdrawn += number;
+        users[id].balanceForWithdrawal = utils.rounding(users[id].balanceForWithdrawal - number);
+        users[id].withdrawn = utils.rounding(users[id].withdrawn + number);
 
         return context.send(` У пользователя с ID ${id} было выведено ${number}`);
     }
     if ( command == "баланс" )
     {
-        users[id].balanceForWithdrawal += number;
+        users[id].balanceForWithdrawal = utils.rounding(users[id].balanceForWithdrawal + number);
         return context.send(`Пользователю с ID ${id} на баланс для вывода было зачислено ${number}`);
     }
     if ( command == "инвестировать" )
     {
-        users[id].invested += number;
+        users[id].invested = utils.rounding(users[id].invested + number);
         return context.send(`Пользователю с ID ${id} было инвестировано ${number}`);
     }
 }
