@@ -216,7 +216,7 @@ vk.updates.on('message_new', async (context) =>
         	})
 			.catch((err) =>
 			{
-				context.send("Пользователь не найден");
+				return context.send("Пользователь не найден");
 			});
 
 			if (resource?.type == 'user')
