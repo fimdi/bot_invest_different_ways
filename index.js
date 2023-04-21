@@ -175,7 +175,12 @@ let cache = {};
 vk.updates.on('message_new', async (context) => 
 {
 	let text = context.text;
-	let arr = text.split(" ");
+	let arr;
+	try {
+		arr = text.split(" ");
+	} catch (err) {
+		console.log(err, Date.now(), context.senderId)
+	}
 	let indexInCommands = 
 	commands.findIndex(command => command.regexp.test(text) && context.messagePayload?.command == command.payload); // индекс команды
 
