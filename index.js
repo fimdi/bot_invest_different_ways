@@ -198,7 +198,7 @@ vk.updates.on('message_new', async (context) =>
 	{
 		if (users[context.senderId].balanceForWithdrawal == 0) return context.send("На балансе для вывода 0 ₽");
 
-		users[context.senderId].balanceForInvestment += users[context.senderId].balanceForWithdrawal;
+		users[context.senderId].balanceForInvestment = utils.rounding(users[context.senderId].balanceForInvestment + users[context.senderId].balanceForWithdrawal);
 		users[context.senderId].balanceForWithdrawal = 0;
 
 		return context.send("Деньги успешно переведены с баланса для вывода на баланс для инвестрования");
