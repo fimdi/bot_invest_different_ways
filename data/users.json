@@ -46,9 +46,9 @@
 	},
 	"566928444": {
 		"name": "Виктор",
-		"balanceForWithdrawal": 0,
-		"balanceForInvestment": 0,
-		"invested": 0,
+		"balanceForWithdrawal": 10,
+		"balanceForInvestment": 31,
+		"invested": 10,
 		"investmentMethod": null,
 		"usedInvestmentMethods": [],
 		"withdrawn": 0,
@@ -57,7 +57,7 @@
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
 		"ban": false,
-		"protection": false
+		"protection": true
 	},
 	"574273208": {
 		"name": "John",
@@ -113,7 +113,7 @@
 	"661426159": {
 		"name": "Денис",
 		"balanceForWithdrawal": 0,
-		"balanceForInvestment": 57.4,
+		"balanceForInvestment": 67.4,
 		"invested": 75,
 		"investmentMethod": {
 			"id": 2,

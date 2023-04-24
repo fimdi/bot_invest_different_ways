@@ -1,10 +1,7 @@
 {
-	"onlineDate": 1682024400000,
-	"statistics": {
-		"incomeFromThefts": 6.5,
-		"newUsers": 0,
-		"weWork": 3
-	},
+	"onlineDate": 1682283600000,
+	"statistics": {},
+	"promoCodes": {},
 	"investmentMethods": {
 		"1": {
 			"incomeDayPercentage": 5.6,

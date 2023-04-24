@@ -1,5 +1,6 @@
 const utils = require('../utils.js');
 const { Keyboard } = require('vk-io');
+const { QuestionManager } = require('vk-io-question');
 
 const profile = (context, users) => {
     let id = context.senderId;
@@ -33,11 +34,23 @@ ${incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.
 Украли вы: ${ utils.prettify(users[id].stolenByUser) } ₽`, users[id].balanceForWithdrawal && !users[id].protection ? {
     keyboard: Keyboard.builder()
     .textButton({
+        label: '📝Активировать промокод',
+        color: Keyboard.POSITIVE_COLOR
+    })
+    .row()
+    .textButton({
         label: '🔒Защитить средства',
         color: Keyboard.POSITIVE_COLOR
     })
     .inline()
-} : {});
+} : {
+    keyboard: Keyboard.builder()
+    .textButton({
+        label: '📝Активировать промокод',
+        color: Keyboard.POSITIVE_COLOR
+    })
+    .inline()
+});
 }
 
 module.exports = profile;

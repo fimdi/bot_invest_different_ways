@@ -7,6 +7,7 @@ const editCommand = require('./function/команда редактироват�
 const createCommand = require('./function/команда создать.js');
 const steal = require('./function/функция кражи.js');
 const invest = require('./function/функция инвестирования.js');
+const createPromoCode = require('./function/создать промокод.js');
 
 var CronJob = require('cron').CronJob;
 const { VK, Keyboard, resolveResource } = require('vk-io');
@@ -184,6 +185,38 @@ vk.updates.on('message_new', async (context) =>
 	let indexInCommands = 
 	commands.findIndex(command => command.regexp.test(text) && context.messagePayload?.command == command.payload); // индекс команды
 
+	
+	if ( /^📝Активировать промокод$/i.test(context.text) )
+	{
+		let res = await context.question(`Введите промокод...`);
+		text = res.text;
+		
+		if ( !(text in data.promoCodes) ) return context.send("Такого промокода нет");
+		if ( data.promoCodes[text].activated.includes(context.senderId) ) return context.send("Вы уже активировали промокод");
+		
+		data.promoCodes[text].activated.push(context.senderId);
+		data.promoCodes[text].numberActivations -= 1;
+		let sum = +data.promoCodes[text].amount;
+		users[context.senderId].balanceForInvestment = utils.rounding(users[context.senderId].balanceForInvestment + sum);
+
+		if (data.promoCodes[text].numberActivations <= 0) delete data.promoCodes[text];
+
+		return context.send(`Вы успешно активировали промокод на сумму ${ utils.prettify(sum) } ₽`);
+	}
+	if ( /^промокоды$/i.test(context.text) && config.owners.includes(context.senderId) )
+	{
+
+		let res = Object.keys(data.promoCodes).map(el => 
+`Промокод "${el}" 
+Cумма ${data.promoCodes[el].amount} ₽ 
+Количество активаций ${data.promoCodes[el].numberActivations}`).join("\n\n");
+
+		return context.send("Промокоды\n\n" + (res.length == 0 ? "Отсутствуют" : res));
+	}
+	if ( /^промокод /i.test(context.text) && config.owners.includes(context.senderId) )
+	{
+		return createPromoCode(context, arr, data);
+	}
 	if (context.text == "Начать" && context.messagePayload?.command == 'start')
 	{
 		return commands[0].function(context);
