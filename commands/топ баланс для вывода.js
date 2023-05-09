@@ -1,8 +1,8 @@
 const utils = require('../utils.js');
 
-const topBalance = (context, users) =>
+const topBalance = async (context, pool) =>
 {
-    let top = utils.getTop(users, "balanceForWithdrawal", "баланс");
+    let top = await utils.getTop("balanceForWithdrawal", "баланс", pool);
 
     context.send(`Почему ещё не вывели?\n\n${ top.join('\n') }`);
 }

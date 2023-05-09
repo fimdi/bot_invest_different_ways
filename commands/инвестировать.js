@@ -14,27 +14,26 @@ function shuffle(array) {
     return array;
 }
 
-function generateInvestmentMethods(context, users, data) {
+function generateInvestmentMethods(methods) {
     let res = [];
-    let arrId = 
-    Object.keys(data.investmentMethods)
-    .filter(el => !users[context.senderId].usedInvestmentMethods.includes( +el ) );
+    methods = shuffle(methods).slice(0, 6);
     
-    arrId = shuffle(arrId).slice(0, 6);
-    
-    arrId.forEach(id =>
+    methods.forEach(el =>
         res.push(
-`№ ${id}
-${data.investmentMethods[id].incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs( data.investmentMethods[id].incomeDayPercentage )}%
-Налог в день: ${data.investmentMethods[id].taxDayRubles} ₽
-Срок ${data.investmentMethods[id].term} ${utils.lineEnding(data.investmentMethods[id].term, ["день", "дня", "дней"])}`)
+`№ ${el.id}
+${el.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs( el.incomeDayPercentage )}%
+Налог в день: ${el.taxDayRubles} ₽
+Срок ${el.term} ${utils.lineEnding(el.term, ["день", "дня", "дней"])}`)
     )
 
     return res.join("\n\n");
 }
 
-const invest = (context, users, data) => {
-    let available = Object.keys(data.investmentMethods).length - users[context.senderId].usedInvestmentMethods.length;
+const invest = async (context, user, pool) => 
+{
+    let [res] = await pool.query('SELECT * FROM listInvestmentMethods');
+    
+    let available = res.length - (user.usedInvestmentMethods === null ? 0 : user.usedInvestmentMethods.length);
     
     context.send(
 `🚤Выбирите способ инвестирования (отправте номер):
@@ -43,7 +42,7 @@ const invest = (context, users, data) => {
 
 ПОВТОРНАЯ ИНВЕСТИЦИЯ ОБНУЛЯЕТ ПРОШЛУЮ ИНВЕСТИЦИЮ
 
-${generateInvestmentMethods(context, users, data)}`);
+${ generateInvestmentMethods(res) }`);
 }
 
 module.exports = invest;

@@ -1,6 +1,9 @@
 {
-	"onlineDate": 1682283600000,
-	"statistics": {},
+	"onlineDate": 1683579600000,
+	"statistics": {
+		"newUsers": 0,
+		"weWork": 1
+	},
 	"promoCodes": {},
 	"investmentMethods": {
 		"1": {

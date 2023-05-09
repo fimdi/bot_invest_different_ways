@@ -1,8 +1,8 @@
 const utils = require('../utils.js');
 
-const topInvestors = (context, users) =>
+const topInvestors = async (context, pool) =>
 {
-    let top = utils.getTop(users, "invested", "инвестировал");
+    let top = await utils.getTop("invested", "инвестировал", pool);
 
     context.send(`Финансово грамотные.\n\n${ top.join('\n') }`);
 }

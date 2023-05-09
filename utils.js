@@ -24,19 +24,18 @@ function prettify(num)
 //   	return formatter.format(num);
 // }
 
-function getTop(users, parameter,  text)
+async function getTop(parameter, text, pool)
 {
 	let i = 1;
+    let [users] = await pool.query('SELECT id, name, ?? FROM users ORDER BY ?? DESC LIMIT 10',
+    [parameter, parameter]);
 
-    const top = Object.keys(users)
-    .sort((a, b) => users[b][parameter] - users[a][parameter])
-    .slice(0, 10).map(key => `${i++}) [id${key}|${users[key].name}] — ${text} ${users[key][parameter]} ₽`);
+    const top = users.map(el => `${i++}) [id${el.id}|${el.name}] — ${text} ${el[parameter]} ₽`);
     if (top.length < 10)
     {
 	    let empty = 10 - top.length;
 	    for (let j = 0; j < empty; j++) top.push(`${i++}) Пусто`);
     }
-
 	return top;
 }
 

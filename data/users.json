@@ -46,10 +46,16 @@
 	},
 	"566928444": {
 		"name": "Виктор",
-		"balanceForWithdrawal": 10,
-		"balanceForInvestment": 31,
-		"invested": 10,
-		"investmentMethod": null,
+		"balanceForWithdrawal": 11.73,
+		"balanceForInvestment": 0,
+		"invested": 31,
+		"investmentMethod": {
+			"id": 1,
+			"incomeDayPercentage": 5.6,
+			"taxDayRubles": 0,
+			"term": 15,
+			"daysLeft": 14
+		},
 		"usedInvestmentMethods": [],
 		"withdrawn": 0,
 		"replenished": 0,
@@ -57,7 +63,7 @@
 		"stolenByUser": 0,
 		"attemptsSteal": 1,
 		"ban": false,
-		"protection": true
+		"protection": false
 	},
 	"574273208": {
 		"name": "John",

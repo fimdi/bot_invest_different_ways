@@ -1,8 +1,8 @@
 const utils = require('../utils.js');
 
-const topThieves = (context, users) =>
+const topThieves = async (context, pool) =>
 {
-    let top = utils.getTop(users, "stolenByUser", "украл");
+    let top = await utils.getTop("stolenByUser", "украл", pool);
 
     context.send(`Отомстите им!\n\n${ top.join('\n') }`);
 }

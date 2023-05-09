@@ -1,6 +1,6 @@
-const withdrawalYoomoney = (context, users) =>
+const withdrawalYoomoney = (context, user) =>
 {
-    if (users[context.senderId].ban) return context.send('Ваш аккаунт заморожен, обратитесь к админу');
+    if (user.ban) return context.send('Ваш аккаунт заморожен, обратитесь к админу');
 
     context.send("Не доступно");
 }
