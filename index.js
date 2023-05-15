@@ -114,24 +114,24 @@ async function getUser(id)
 	return user;
 }
 
-async function createWayInvestment(method)
-{
-	let [res] = await pool.query('INSERT INTO usersInvestmentMethods(`number`, `incomeDayPercentage`, `taxDayRubles`, `term`, `daysLeft`) VALUES(?, ?, ?, ?, ?)', 
-	[method.id, method.incomeDayPercentage, method.taxDayRubles, method.term, method.daysLeft]);
+// async function createWayInvestment(method)
+// {
+// 	let [res] = await pool.query('INSERT INTO usersInvestmentMethods(`number`, `incomeDayPercentage`, `taxDayRubles`, `term`, `daysLeft`) VALUES(?, ?, ?, ?, ?)', 
+// 	[method.id, method.incomeDayPercentage, method.taxDayRubles, method.term, method.daysLeft]);
 
-	return res.insertId;
-}
+// 	return res.insertId;
+// }
 
-(async () =>
-{
-	let US = await Promise.all(Object.keys(users).map(async (e) => 
-	{
-		return `(${e}, ${ pool.escape(users[e].name) }, ${users[e].balanceForWithdrawal}, ${users[e].balanceForInvestment}, ${users[e].invested}, ${ users[e].investmentMethod == null ? null : await createWayInvestment(users[e].investmentMethod) }, ${ pool.escape(JSON.stringify(users[e].usedInvestmentMethods)) }, ${users[e].withdrawn}, ${users[e].replenished}, ${users[e].stolenFromUser}, ${users[e].stolenByUser}, ${users[e].attemptsSteal}, ${users[e].ban}, ${users[e].protection})`
-	}));
+// (async () =>
+// {
+// 	let US = await Promise.all(Object.keys(users).map(async (e) => 
+// 	{
+// 		return `(${e}, ${ pool.escape(users[e].name) }, ${users[e].balanceForWithdrawal}, ${users[e].balanceForInvestment}, ${users[e].invested}, ${ users[e].investmentMethod == null ? null : await createWayInvestment(users[e].investmentMethod) }, ${ pool.escape(JSON.stringify(users[e].usedInvestmentMethods)) }, ${users[e].withdrawn}, ${users[e].replenished}, ${users[e].stolenFromUser}, ${users[e].stolenByUser}, ${users[e].attemptsSteal}, ${users[e].ban}, ${users[e].protection})`
+// 	}));
 	
 	
-	await pool.query(`INSERT INTO users(id, name, balanceForWithdrawal, balanceForInvestment, invested, investmentMethodId, usedInvestmentMethods, withdrawn, replenished, stolenFromUser, stolenByUser, attemptsSteal, ban, protection) VALUES\n` + US.join(',\n'))
-})()
+// 	await pool.query(`INSERT INTO users(id, name, balanceForWithdrawal, balanceForInvestment, invested, investmentMethodId, usedInvestmentMethods, withdrawn, replenished, stolenFromUser, stolenByUser, attemptsSteal, ban, protection) VALUES\n` + US.join(',\n'))
+// })()
 
 
 vk.updates.on('message_new', async (context) => 
