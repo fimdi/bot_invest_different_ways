@@ -1,7 +1,10 @@
 const utils = require('../utils.js');
 const { Keyboard } = require('vk-io');
 
-const profile = async (context, user, pool) => {
+module.exports = async (context, arr, pool, getUser) => {
+    if ( arr.length < 2 ) return context.send("Чего-то не хватает");
+
+    let user = await getUser(arr[1]);
     let investmentMethod = "Отсутствует";
     
     if (user.investmentMethodId != null) 
@@ -55,5 +58,3 @@ ${ investmentMethod }
     .inline()
 });
 }
-
-module.exports = profile;

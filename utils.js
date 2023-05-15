@@ -30,7 +30,7 @@ async function getTop(parameter, text, pool)
     let [users] = await pool.query('SELECT id, name, ?? FROM users ORDER BY ?? DESC LIMIT 10',
     [parameter, parameter]);
 
-    const top = users.map(el => `${i++}) [id${el.id}|${el.name}] — ${text} ${el[parameter]} ₽`);
+    const top = users.map(el => `${i++}) [id${el.id}|${el.name}] — ${text} ${+el[parameter]} ₽`);
     if (top.length < 10)
     {
 	    let empty = 10 - top.length;

@@ -1,29 +1,67 @@
+const { resolveResource } = require('vk-io');
 const utils = require('../utils.js');
 
-const steal = async (context, users, data, vk, id) =>
+function steal(context, user, data, vk, pool, selectedUser, id)
 {
-    let sum = utils.rounding(users[context.senderId].invested * 0.1); // 10% от инвестирования
+    let sum = utils.rounding(user.invested * 0.1); // 10% от инвестирования
 
-    if ( users[context.senderId].invested == 0 ) return context.send("Для кражи необходимо инвестировать");
-    if ( users[context.senderId].attemptsSteal == 0 ) return context.send("На сегодня у вас осталось 0 попыток");
-    if ( users[id].protection ) return context.send("Этот пользователь защищён от краж до 00:00");
-    if ( users[id].balanceForWithdrawal <= 0 ) return context.send("У этого пользователя нет денег");
-    if ( users[id].balanceForWithdrawal < sum ) sum = users[id].balanceForWithdrawal;
+    if ( user.invested == 0 ) return context.send("Для кражи необходимо инвестировать");
+    if ( user.attemptsSteal == 0 ) return context.send("На сегодня у вас осталось 0 попыток");
+    if ( selectedUser.protection ) return context.send("Этот пользователь защищён от краж до 00:00");
+    if ( selectedUser.balanceForWithdrawal <= 0 ) return context.send("У этого пользователя нет денег");
+    if ( selectedUser.balanceForWithdrawal < sum ) sum = selectedUser.balanceForWithdrawal;
     
-    users[id].balanceForWithdrawal = utils.rounding( users[id].balanceForWithdrawal - sum );
-    users[id].stolenFromUser = utils.rounding( users[id].stolenFromUser + sum );
-    users[context.senderId].balanceForWithdrawal = utils.rounding( users[context.senderId].balanceForWithdrawal + sum / 2 ); // половина пользователю
-    users[context.senderId].stolenByUser = utils.rounding( users[context.senderId].stolenByUser + sum );
-    users[context.senderId].attemptsSteal -= 1;
-    data.statistics.incomeFromThefts = utils.rounding( data.statistics.incomeFromThefts + sum / 2 ); // половина боту
+    let halfSum = utils.rounding(sum / 2);
 
-    context.send(`Вы украли ${ sum } ₽, но донести до дома вы смогли только половину: ${ utils.rounding(sum / 2) } ₽`);
+    pool.query(`
+    UPDATE 
+        users 
+    SET 
+        balanceForWithdrawal = ?,
+        stolenFromUser = ?
+    WHERE 
+        id = ?`, [selectedUser.balanceForWithdrawal - sum, selectedUser.stolenFromUser + sum, id]);
+    // selectedUser.balanceForWithdrawal = utils.rounding( selectedUser.balanceForWithdrawal - sum );
+    // selectedUser.stolenFromUser = utils.rounding( selectedUser.stolenFromUser + sum );
+    pool.query(`
+    UPDATE
+        users
+    SET
+        balanceForWithdrawal = ?,
+        stolenByUser = ?,
+        attemptsSteal = attemptsSteal - 1
+    WHERE
+        id = ?
+    `, [user.balanceForWithdrawal + halfSum, user.stolenByUser + sum, context.senderId]);
+    // user.balanceForWithdrawal = utils.rounding( user.balanceForWithdrawal + halfSum ); // половина пользователю
+    // user.stolenByUser = utils.rounding( user.stolenByUser + sum );
+    // user.attemptsSteal -= 1;
+    data.statistics.incomeFromThefts = utils.rounding( data.statistics.incomeFromThefts + halfSum ); // половина боту
+
+    context.send(`Вы украли ${ sum } ₽, но донести до дома вы смогли только половину: ${ halfSum } ₽`);
     
     vk.api.messages.send({
         user_id: id,
         random_id: Date.now(),
-        message: `[id${context.senderId}|Вор] украл у вас ${ sum } ₽, отомсти ему! ID: ${context.senderId}`
+        message: `[id${ context.senderId }|Вор] украл у вас ${ sum } ₽, отомсти ему! ID: ${ context.senderId }`
     })
+
+    utils.save('./data/data.json', data);
 }
 
-module.exports = steal;
+module.exports = async (context, user, data, vk, pool, getUser) =>
+{
+    let selectedUser = await getUser(context.text);
+    if ( selectedUser ) return steal(context, user, data, vk, pool, selectedUser, id);
+
+	const resource = await resolveResource({ api: vk.api, resource: context.text })
+	.catch(err => { return context.send("Пользователь не найден"); });
+
+	if ( resource?.type == 'user' )
+	{
+        selectedUser = await getUser(resource.id);
+		if ( selectedUser ) return steal(context, user, data, vk, pool, selectedUser, resource.id);
+
+		return context.send("Данный пользователь не зарегистрирован в боте");
+	}
+}

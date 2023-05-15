@@ -3,11 +3,8 @@ const data = require('./data/data.json');
 const config = require('./config.json');
 const utils = require('./utils.js');
 
-const editCommand = require('./commands/команда редактировать.js');
-const createCommand = require('./commands/команда создать.js');
 const steal = require('./commands/функция кражи.js');
 const invest = require('./commands/функция инвестирования.js');
-const createPromoCode = require('./commands/создать промокод.js');
 const menu = require('./commands/меню.js');
 const profile = require('./commands/профиль.js');
 const investMessage = require('./commands/инвестировать.js');
@@ -26,9 +23,22 @@ const protectionOfFunds = require('./commands/защита средств.js');
 const replenishmentKeksik = require('./commands/пополнение кексиком.js');
 const replenishmentYooMoney = require('./commands/пополнение ЮMoney.js');
 const withdrawalYooMoney = require('./commands/вывод ЮMoney.js');
+const activatePromoCode = require('./commands/активировать промокод.js');
+const edit = require('./admin_commands/редактировать.js');
+const _replenish = require('./admin_commands/пополнить.js');
+const _withdraw = require('./admin_commands/вывести.js');
+const _delete = require('./admin_commands/удалить.js');
+const create = require('./admin_commands/создать.js');
+const promoCode = require('./admin_commands/промокод.js');
+const investmentMethod = require('./admin_commands/способ инвестиции.js');
+const deletePromoCode = require('./admin_commands/удалить промокод.js');
+const ban = require('./admin_commands/бан.js');
+const unban = require('./admin_commands/разбан.js');
+const viewProfile = require('./admin_commands/посмотреть профиль.js');
+const commands = require('./admin_commands/команды.js');
 
 var CronJob = require('cron').CronJob;
-const { VK, Keyboard, resolveResource } = require('vk-io');
+const { VK, Keyboard } = require('vk-io');
 const { QuestionManager } = require('vk-io-question');
 const mysql = require('mysql2/promise');
 
@@ -36,8 +46,8 @@ const pool = mysql.createPool({
     host: '141.8.195.65',
     port: 3306,
     user: 'a0672554_Victor',
-    password: 'f59zd$CfEd@TZ9dccd',
-    database: 'a0672554_bot_investing_different_ways',
+    password: '59rFx2RvVPGDZ9bq',
+    database: 'a0672554_investing_DW_Den',
 	charset: 'utf8mb4_general_ci'
 });
 const vk = new VK({
@@ -49,22 +59,6 @@ const vk = new VK({
 const questionManager = new QuestionManager();
 vk.updates.use(questionManager.middleware);
 
-const startProfile = JSON.stringify({
-	"name": "Пользователь",
-	"balanceForWithdrawal": 0,
-	"balanceForInvestment": 0,
-	"invested": 0,
-	"investmentMethod": null,
-	"usedInvestmentMethods": [],
-	"withdrawn": 0,
-	"replenished": 0,
-	"stolenFromUser": 0,
-	"stolenByUser": 0,
-	"attemptsSteal": 1,
-	"ban": false,
-	"protection": false
-});
-
 const DAY = 86400000;
 
 function everyDay()
@@ -75,23 +69,22 @@ function everyDay()
 	data.statistics.newUsers = 0;
 	data.statistics.weWork += 1;
 
-	for (user in users)
-	{
-		if( !users[user].attemptsSteal ) users[user].attemptsSteal = 1;
-		if ( users[user].protection ) users[user].protection = false;
-
-		if ( users[user].investmentMethod != null ) // если у пользователя есть способ инвестирования
-		{
-			let multiplier = (day > users[user].investmentMethod.daysLeft ? users[user].investmentMethod.daysLeft : day);
-			let res = users[user].invested * users[user].investmentMethod.incomeDayPercentage / 100 - users[user].investmentMethod.taxDayRubles;
-			
-			users[user].balanceForWithdrawal = utils.rounding( users[user].balanceForWithdrawal + res * multiplier );
-			users[user].investmentMethod.daysLeft -= multiplier;
-		}
-	}
+	pool.query('UPDATE users SET attemptsSteal = 1 WHERE attemptsSteal = 0');
+	pool.query('UPDATE users SET protection = false WHERE protection = true');
+	pool.query(`
+	UPDATE 
+		users u, 
+		usersInvestmentMethods i
+	SET
+		u.balanceForWithdrawal = u.balanceForWithdrawal + (u.invested * i.incomeDayPercentage / 100 - i.taxDayRubles) * IF(? > i.daysLeft, i.daysLeft, ?),
+		i.daysLeft = i.daysLeft - IF(? > i.daysLeft, i.daysLeft, ?)
+	WHERE
+		u.investmentMethodId  = i.id
+	`, [day, day, day, day]);
 
 	let date = new Date();
 	data.onlineDate = Number( new Date(date.getFullYear(), date.getMonth(), date.getDate()) );
+	utils.save('./data/data.json', data);
 }
 everyDay();
 
@@ -103,73 +96,111 @@ job.start();
 
 let cache = {};
 
+async function getUser(id)
+{
+	let [[user]] = await pool.query(`SELECT * FROM users WHERE id = ?`, [id]);
+	
+	if ( user )
+	{
+		user.balanceForWithdrawal = Number(user.balanceForWithdrawal);
+		user.balanceForInvestment = Number(user.balanceForInvestment);
+		user.invested = Number(user.invested);
+		user.withdrawn = Number(user.withdrawn);
+		user.replenished = Number(user.replenished);
+		user.stolenFromUser = Number(user.stolenFromUser);
+		user.stolenByUser = Number(user.stolenByUser);
+	}
+
+	return user;
+}
+
+async function createWayInvestment(method)
+{
+	let [res] = await pool.query('INSERT INTO usersInvestmentMethods(`number`, `incomeDayPercentage`, `taxDayRubles`, `term`, `daysLeft`) VALUES(?, ?, ?, ?, ?)', 
+	[method.id, method.incomeDayPercentage, method.taxDayRubles, method.term, method.daysLeft]);
+
+	return res.insertId;
+}
+
+(async () =>
+{
+	let US = await Promise.all(Object.keys(users).map(async (e) => 
+	{
+		return `(${e}, ${ pool.escape(users[e].name) }, ${users[e].balanceForWithdrawal}, ${users[e].balanceForInvestment}, ${users[e].invested}, ${ users[e].investmentMethod == null ? null : await createWayInvestment(users[e].investmentMethod) }, ${ pool.escape(JSON.stringify(users[e].usedInvestmentMethods)) }, ${users[e].withdrawn}, ${users[e].replenished}, ${users[e].stolenFromUser}, ${users[e].stolenByUser}, ${users[e].attemptsSteal}, ${users[e].ban}, ${users[e].protection})`
+	}));
+	
+	
+	await pool.query(`INSERT INTO users(id, name, balanceForWithdrawal, balanceForInvestment, invested, investmentMethodId, usedInvestmentMethods, withdrawn, replenished, stolenFromUser, stolenByUser, attemptsSteal, ban, protection) VALUES\n` + US.join(',\n'))
+})()
+
+
 vk.updates.on('message_new', async (context) => 
 {
-	if (context.senderId in cache)
+	let user = await getUser(context.senderId);
+
+	if ( context.senderId in cache )
 	{
 		context.state.user = cache[context.senderId];
 		delete cache[context.senderId];
 	}
-	let [[user]] = await pool.query(`SELECT id, name, balanceForWithdrawal, balanceForInvestment, 
-	invested, investmentMethodId, usedInvestmentMethods, withdrawn, replenished, stolenFromUser, 
-	stolenByUser, attemptsSteal, ban+0 AS ban, protection+0 AS protection FROM users WHERE id = ?`, 
-	[context.senderId]);
-	if (user === undefined)
+	if ( !user )
 	{
 		let [userData] = await vk.api.users.get({user_id: context.senderId});
 		
-		pool.query('INSERT INTO users(id, name) VALUES(?, ?)',
+		await pool.query('INSERT INTO users(id, name) VALUES(?, ?)',
 		[context.senderId, userData.first_name]);
 
-		[[user]] = await pool.query('SELECT * FROM users WHERE id = ?', [context.senderId]);
+		user = await getUser(context.senderId);
 	}
-	if (context.text == "") return;
+	if ( user?.usedInvestmentMethods == null ) user.usedInvestmentMethods = [];
+	if ( context.text == "" ) return;
+
 	let text = context.text;
 	let arr = text.split(" ");
 
-	if ( /^Начать|Start|Старт|Меню|Запуск|Привет|Хай|Здравствуйте|Hello$/i.test(context.text) )
+	if ( /^(Начать|Start|Старт|Меню|Запуск|Привет|Хай|Здравствуйте|Hello)$/i.test(context.text) )
 	{
 		return menu(context);
 	}
-	if ( /^🖥Профиль|Профиль$/i.test(context.text) )
+	if ( /^(🖥Профиль|Профиль)$/i.test(context.text) )
 	{
 		return profile(context, user, pool);
 	}
-	if ( /^📑Инвестировать|Инвестировать$/i.test(context.text) )
+	if ( /^(📑Инвестировать|Инвестировать)$/i.test(context.text) )
 	{
 		cache[context.senderId] = { pastMessage: "инвестировать" };
 		return investMessage(context, user, pool);
 	}
-	if ( /^🖐Украсть|Украсть$/i.test(context.text) )
+	if ( /^(🖐Украсть|Украсть)$/i.test(context.text) )
 	{
 		cache[context.senderId] = { pastMessage: "украсть" };
 		return stealMessage(context, user);
 	}
-	if ( /^⬇Пополнить$|^Пополнить$/i.test(context.text) )
+	if ( /^(⬇Пополнить|Пополнить)$/i.test(context.text) )
 	{
 		return replenish(context);
 	}
-	if ( /^👀Топ$|^Топ$/i.test(context.text) )
+	if ( /^(👀Топ$|^Топ)$/i.test(context.text) )
 	{
 		return top(context);
 	}
-	if ( /^⬆Вывести|Вывести$/i.test(context.text) )
+	if ( /^(⬆Вывести|Вывести)$/i.test(context.text) )
 	{
 		return withdraw(context, user);
 	}
-	if ( /^💰Магнаты$/i.test(context.text) )
+	if ( /^(💰Магнаты|Магнаты)$/i.test(context.text) )
 	{
 		return topBalance(context, pool);
 	}
-	if ( /^🖐Воры$/i.test(context.text) )
+	if ( /^(🖐Воры|Воры)$/i.test(context.text) )
 	{
 		return topThieves(context, pool);
 	}
-	if ( /^🕸Жертвы воров$/i.test(context.text) )
+	if ( /^(🕸Жертвы воров|Жертвы воров)$/i.test(context.text) )
 	{
 		return topVictims(context, pool);
 	}
-	if ( /^⏳Инвесторы$/i.test(context.text) )
+	if ( /^(⏳Инвесторы|Инвесторы)$/i.test(context.text) )
 	{
 		return topInvestors(context, pool);
 	}
@@ -177,18 +208,18 @@ vk.updates.on('message_new', async (context) =>
 	{
 		return manually(context);
 	}
-	if ( /^🔁Репополнить|Репополнить$/i.test(context.text) )
+	if ( /^(🔁Репополнить|Репополнить)$/i.test(context.text) )
 	{
 		cache[context.senderId] = { pastMessage: "репополнить" };
 		return re_replenishment(context);
 	}
-	if ( /^💻Статистика бота|Статистика бота$/i.test(context.text) )
+	if ( /^(💻Статистика бота|Статистика бота)$/i.test(context.text) )
 	{
-		return statistics(context);
+		return statistics(context, data, pool);
 	}
-	if ( /^🔒Защитить средства|Защитить средства$/i.test(context.text) )
+	if ( /^(🔒Защитить средства|Защитить средства)$/i.test(context.text) )
 	{
-		return protectionOfFunds(context);
+		return protectionOfFunds(context, user, pool);
 	}
 	if ( /^Кексик$/i.test(context.text) && context.messagePayload?.command == "пополнение")
 	{
@@ -202,71 +233,59 @@ vk.updates.on('message_new', async (context) =>
 	{
 		return replenishmentYooMoney(context);
 	}
-	if ( /^📝Активировать промокод$/i.test(context.text) )
+	if ( /^(📝Активировать промокод|Активировать промокод)$/i.test(context.text) )
 	{
-		let res = await context.question(`Введите промокод...`);
-		text = res.text;
-		
-		if ( !(text in data.promoCodes) ) return context.send("Такого промокода нет");
-		if ( data.promoCodes[text].activated.includes(context.senderId) ) return context.send("Вы уже активировали промокод");
-		
-		data.promoCodes[text].activated.push(context.senderId);
-		data.promoCodes[text].numberActivations -= 1;
-		let sum = +data.promoCodes[text].amount;
-		users[context.senderId].balanceForInvestment = utils.rounding(users[context.senderId].balanceForInvestment + sum);
-
-		if (data.promoCodes[text].numberActivations <= 0) delete data.promoCodes[text];
-
-		return context.send(`Вы успешно активировали промокод на сумму ${ utils.prettify(sum) } ₽`);
+		return activatePromoCode(context, pool);
 	}
 	if ( /^промокоды$/i.test(context.text) && config.owners.includes(context.senderId) )
 	{
 
-		let res = Object.keys(data.promoCodes).map(el => 
-`Промокод "${el}" 
-Cумма ${data.promoCodes[el].amount} ₽ 
-Количество активаций ${data.promoCodes[el].numberActivations}`).join("\n\n");
+		let [promoCodes] = await pool.query(`SELECT * FROM promoCodes`);
 
-		return context.send("Промокоды\n\n" + (res.length == 0 ? "Отсутствуют" : res));
+		promoCodes = promoCodes.map(promoCode => 
+`Промокод "${promoCode.name}" 
+Cумма ${+promoCode.amount} ₽ 
+Количество активаций ${promoCode.numberActivations}`).join("\n\n");
+
+		return context.send("Промокоды\n\n" + (promoCodes.length == 0 ? "Отсутствуют" : promoCodes));
 	}
-	if ( /^промокод /i.test(context.text) && config.owners.includes(context.senderId) )
-	{
-		return createPromoCode(context, arr, data);
-	}
+
 	if ( config.owners.includes(context.senderId) )
 	{
-		if ( /^ред$/i.test(arr[0]) ) return editCommand(context, arr, users, startProfile, vk);
-		if ( /^создать$/i.test(arr[0]) ) return createCommand(context, arr, users, startProfile, vk, data);
+		if ( /^Добавить|^Убавить|^Присвоить/i.test(text) ) return await edit(context, arr, pool, getUser, text);
+
+		if ( /^Пополнить/i.test(text) ) return await _replenish(context, user, arr, pool, getUser);
+		if ( /^Вывести/i.test(text) ) return await _withdraw(context, user, arr, pool, getUser);
+		
+		if ( /^Удалить/i.test(text) )
+		{
+			if ( arr[1].toLowerCase() == "промокод" ) return await deletePromoCode(context, arr, pool);
+			return await _delete(context, arr, pool, getUser);
+		}
+		if ( /^Создать/i.test(text) ) return await create(context, arr, pool, getUser, vk);
+
+		if ( /^СпособИнвестиции/i.test(text) ) return await investmentMethod(context, arr, pool);
+		if ( /^Промокод/i.test(text) ) return await promoCode(context, arr, pool);
+
+		if ( /^Бан/i.test(text) ) return await ban(context, arr, pool, getUser);
+		if ( /^Разбан/i.test(text) ) return await unban(context, arr, pool, getUser);
+		if ( /^Профиль/i.test(text) ) return await viewProfile(context, arr, pool, getUser);
+
+		if ( /^Команды/i.test(text) ) return await commands(context);
 	}
 	if ( !isNaN(text) && context.state.user?.pastMessage == "инвестировать") return await invest(context, user, pool);
 	if ( text.toLowerCase() == "да" &&  context.state.user?.pastMessage == "репополнить") 
 	{
-		if (users[context.senderId].balanceForWithdrawal == 0) return context.send("На балансе для вывода 0 ₽");
+		if (user.balanceForWithdrawal == 0) return context.send("На балансе для вывода 0 ₽");
 
-		users[context.senderId].balanceForInvestment = utils.rounding(users[context.senderId].balanceForInvestment + users[context.senderId].balanceForWithdrawal);
-		users[context.senderId].balanceForWithdrawal = 0;
+		pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + balanceForWithdrawal, balanceForWithdrawal = 0 WHERE id = ?`, 
+		[context.senderId]);
 
 		return context.send("Деньги успешно переведены с баланса для вывода на баланс для инвестрования");
 	}
 	if ( context.state.user?.pastMessage == "украсть" )
 	{
-		if ( text in users ) return steal(context, users, data, vk, text);
-
-		const resource = await resolveResource({
-            api: vk.api,
-            resource: text
-        })
-		.catch((err) =>
-		{
-			return context.send("Пользователь не найден");
-		});
-
-		if (resource?.type == 'user')
-		{
-			if (resource.id in users) return steal(context, users, data, vk, resource.id);
-
-			return context.send("Данный пользователь не зарегистрирован в боте");
-		}
+		return steal(context, user, data, vk, pool, getUser);
 	}
 
 	return context.send("Такой команды нет",
@@ -279,12 +298,6 @@ Cумма ${data.promoCodes[el].amount} ₽
 		.inline()
 	});
 });
-
-setInterval(() =>
-{
-    utils.save('./data/data.json', data);
-    utils.save('./data/users.json', users);
-}, 3000);
 
 async function run() 
 {

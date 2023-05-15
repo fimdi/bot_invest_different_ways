@@ -1,8 +1,9 @@
-const protectionOfFunds = (context, users) =>
+const protectionOfFunds = (context, user, pool) =>
 {
-    if (users[context.senderId].protection) return context.send("Ваши средства уже под защитой (до 00:00)");
+    if ( user.protection ) return context.send("Ваши средства уже под защитой (до 00:00)");
 
-    users[context.senderId].protection = true;
+    pool.query(`UPDATE users SET protection = 1 WHERE = `, [context.senderId]);
+    //users[context.senderId].protection = true;
     context.send("Вы успешно защищены от краж до 00:00")
 }
 

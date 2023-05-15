@@ -16,13 +16,14 @@ function shuffle(array) {
 
 function generateInvestmentMethods(methods) {
     let res = [];
-    methods = shuffle(methods).slice(0, 6);
+    methods = shuffle(methods).slice(0, 5);
     
     methods.forEach(el =>
         res.push(
-`№ ${el.id}
+`№ ${el.number}
 ${el.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs( el.incomeDayPercentage )}%
 Налог в день: ${el.taxDayRubles} ₽
+Максимум: ${el.maximumInvestment} ₽
 Срок ${el.term} ${utils.lineEnding(el.term, ["день", "дня", "дней"])}`)
     )
 
