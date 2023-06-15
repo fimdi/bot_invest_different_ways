@@ -1,7 +1,7 @@
 const { resolveResource } = require('vk-io');
 const utils = require('../utils.js');
 
-function steal(context, user, data, vk, pool, selectedUser, id)
+function steal(context, user, data, vk, pool, selectedUser, id, sendMessage)
 {
     let sum = utils.rounding(user.invested * 0.1); // 10% от инвестирования
 
@@ -38,21 +38,17 @@ function steal(context, user, data, vk, pool, selectedUser, id)
     // user.attemptsSteal -= 1;
     data.statistics.incomeFromThefts = utils.rounding( data.statistics.incomeFromThefts + halfSum ); // половина боту
 
-    context.send(`Вы украли ${ sum } ₽, но донести до дома вы смогли только половину: ${ halfSum } ₽`);
+    context.send(`Вы украли ${ utils.prettify(sum) } ₽, но донести до дома вы смогли только половину: ${ utils.prettify(halfSum) } ₽`);
     
-    vk.api.messages.send({
-        user_id: id,
-        random_id: Date.now(),
-        message: `[id${ context.senderId }|Вор] украл у вас ${ sum } ₽, отомсти ему! ID: ${ context.senderId }`
-    })
+    sendMessage(id, `[id${ context.senderId }|Вор] украл у вас ${ utils.prettify(sum) } ₽, отомсти ему! ID: ${ context.senderId }`);
 
     utils.save('./data/data.json', data);
 }
 
-module.exports = async (context, user, data, vk, pool, getUser) =>
+module.exports = async (context, user, data, vk, pool, getUser, sendMessage) =>
 {
     let selectedUser = await getUser(context.text);
-    if ( selectedUser ) return steal(context, user, data, vk, pool, selectedUser, id);
+    if ( selectedUser ) return steal(context, user, data, vk, pool, selectedUser, +context.text, sendMessage);
 
 	const resource = await resolveResource({ api: vk.api, resource: context.text })
 	.catch(err => { return context.send("Пользователь не найден"); });
@@ -60,7 +56,7 @@ module.exports = async (context, user, data, vk, pool, getUser) =>
 	if ( resource?.type == 'user' )
 	{
         selectedUser = await getUser(resource.id);
-		if ( selectedUser ) return steal(context, user, data, vk, pool, selectedUser, resource.id);
+		if ( selectedUser ) return steal(context, user, data, vk, pool, selectedUser, resource.id, sendMessage);
 
 		return context.send("Данный пользователь не зарегистрирован в боте");
 	}

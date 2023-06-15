@@ -47,7 +47,7 @@ const pool = mysql.createPool({
     port: 3306,
     user: 'a0672554_Victor',
     password: '59rFx2RvVPGDZ9bq',
-    database: 'a0672554_investing_DW_Den',
+    database: 'a0672554_investing_DW_Victor',
 	charset: 'utf8mb4_general_ci'
 });
 const vk = new VK({
@@ -114,24 +114,38 @@ async function getUser(id)
 	return user;
 }
 
-// async function createWayInvestment(method)
-// {
-// 	let [res] = await pool.query('INSERT INTO usersInvestmentMethods(`number`, `incomeDayPercentage`, `taxDayRubles`, `term`, `daysLeft`) VALUES(?, ?, ?, ?, ?)', 
-// 	[method.id, method.incomeDayPercentage, method.taxDayRubles, method.term, method.daysLeft]);
+async function sendMessage(id, message)
+{
+	try {
+		await vk.api.messages.send({
+			user_id: id,
+			random_id: Date.now(),
+			message: message
+		});
+	} catch (err)
+	{
+		console.log("Ошибка отправки сообщения:", err);
+	}
+}
 
-// 	return res.insertId;
-// }
+async function createWayInvestment(method)
+{
+	let [res] = await pool.query('INSERT INTO usersInvestmentMethods(`number`, `incomeDayPercentage`, `taxDayRubles`, `term`, `daysLeft`) VALUES(?, ?, ?, ?, ?)', 
+	[method.id, method.incomeDayPercentage, method.taxDayRubles, method.term, method.daysLeft]);
 
-// (async () =>
-// {
-// 	let US = await Promise.all(Object.keys(users).map(async (e) => 
-// 	{
-// 		return `(${e}, ${ pool.escape(users[e].name) }, ${users[e].balanceForWithdrawal}, ${users[e].balanceForInvestment}, ${users[e].invested}, ${ users[e].investmentMethod == null ? null : await createWayInvestment(users[e].investmentMethod) }, ${ pool.escape(JSON.stringify(users[e].usedInvestmentMethods)) }, ${users[e].withdrawn}, ${users[e].replenished}, ${users[e].stolenFromUser}, ${users[e].stolenByUser}, ${users[e].attemptsSteal}, ${users[e].ban}, ${users[e].protection})`
-// 	}));
+	return res.insertId;
+}
+
+(async () =>
+{
+	let US = await Promise.all(Object.keys(users).map(async (e) => 
+	{
+		return `(${e}, ${ pool.escape(users[e].name) }, ${users[e].balanceForWithdrawal}, ${users[e].balanceForInvestment}, ${users[e].invested}, ${ users[e].investmentMethod == null ? null : await createWayInvestment(users[e].investmentMethod) }, ${ pool.escape(JSON.stringify(users[e].usedInvestmentMethods)) }, ${users[e].withdrawn}, ${users[e].replenished}, ${users[e].stolenFromUser}, ${users[e].stolenByUser}, ${users[e].attemptsSteal}, ${users[e].ban}, ${users[e].protection})`
+	}));
 	
 	
-// 	await pool.query(`INSERT INTO users(id, name, balanceForWithdrawal, balanceForInvestment, invested, investmentMethodId, usedInvestmentMethods, withdrawn, replenished, stolenFromUser, stolenByUser, attemptsSteal, ban, protection) VALUES\n` + US.join(',\n'))
-// })()
+	await pool.query(`INSERT INTO users(id, name, balanceForWithdrawal, balanceForInvestment, invested, investmentMethodId, usedInvestmentMethods, withdrawn, replenished, stolenFromUser, stolenByUser, attemptsSteal, ban, protection) VALUES\n` + US.join(',\n'))
+})()
 
 
 vk.updates.on('message_new', async (context) => 
@@ -244,7 +258,7 @@ vk.updates.on('message_new', async (context) =>
 
 		promoCodes = promoCodes.map(promoCode => 
 `Промокод "${promoCode.name}" 
-Cумма ${+promoCode.amount} ₽ 
+Cумма ${utils.prettify(promoCode.amount)} ₽ 
 Количество активаций ${promoCode.numberActivations}`).join("\n\n");
 
 		return context.send("Промокоды\n\n" + (promoCodes.length == 0 ? "Отсутствуют" : promoCodes));
@@ -285,7 +299,7 @@ Cумма ${+promoCode.amount} ₽
 	}
 	if ( context.state.user?.pastMessage == "украсть" )
 	{
-		return steal(context, user, data, vk, pool, getUser);
+		return steal(context, user, data, vk, pool, getUser, sendMessage);
 	}
 
 	return context.send("Такой команды нет",

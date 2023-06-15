@@ -8,11 +8,9 @@ const profile = async (context, user, pool) => {
     {
         let [[res]] = await pool.query('SELECT * FROM usersInvestmentMethods WHERE id = ?', [user.investmentMethodId]);
         investmentMethod = `№ ${res.number}
-${res.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs(res.incomeDayPercentage)} %
-Налог в день: ${res.taxDayRubles} ₽
-Срок ${res.term} ${ utils.lineEnding(res.term, ["день", "дня", "дней"]) }
-        
-Осталось дней: ${res.daysLeft}`;
+        ${res.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs( res.incomeDayPercentage )}%
+        Налог в день: ${utils.prettify(+res.taxDayRubles)} ₽
+        Срок ${res.term} ${utils.lineEnding(res.term, ["день", "дня", "дней"])}`;
     }
     let id = user.id;
     

@@ -18,14 +18,7 @@ function generateInvestmentMethods(methods) {
     let res = [];
     methods = shuffle(methods).slice(0, 5);
     
-    methods.forEach(el =>
-        res.push(
-`№ ${el.number}
-${el.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs( el.incomeDayPercentage )}%
-Налог в день: ${el.taxDayRubles} ₽
-Максимум: ${el.maximumInvestment} ₽
-Срок ${el.term} ${utils.lineEnding(el.term, ["день", "дня", "дней"])}`)
-    )
+    methods.forEach(el => res.push(utils.displayInvestmentMethod(el)) );
 
     return res.join("\n\n");
 }
