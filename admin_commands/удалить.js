@@ -5,6 +5,8 @@ module.exports = async (context, arr, pool, getUser) =>
     let parameter = arr[2].toLowerCase();
     let user = await getUser(arr[1])
     
+    if ( !user ) return context.send("Пользователя нет в боте");
+    
     if ( parameter == "аккаунт" )
     {
         pool.query(`DELETE FROM usersInvestmentMethods WHERE id = ?`, [user.investmentMethodId]);

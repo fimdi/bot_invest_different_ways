@@ -1,9 +1,9 @@
 {
-	"onlineDate": 1686776400000,
+	"onlineDate": 1686862800000,
 	"statistics": {
+		"incomeFromThefts": 147.55,
 		"newUsers": 0,
-		"weWork": 5,
-		"incomeFromThefts": 20.82
+		"weWork": 72
 	},
 	"promoCodes": {}
 }

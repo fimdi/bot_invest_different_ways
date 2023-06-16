@@ -44,10 +44,10 @@ function prettify(num)
 function displayInvestmentMethod(el)
 {
     return `№ ${el.number}
-    ${el.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs( el.incomeDayPercentage )}%
-    Налог в день: ${prettify(+el.taxDayRubles)} ₽
-    Максимум: ${prettify(el.maximumInvestment)} ₽
-    Срок ${el.term} ${lineEnding(el.term, ["день", "дня", "дней"])}`
+${el.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs( el.incomeDayPercentage )}%
+Налог в день: ${prettify(+el.taxDayRubles)} ₽
+Максимум: ${prettify(el.maximumInvestment)} ₽
+Срок ${el.term} ${lineEnding(el.term, ["день", "дня", "дней"])}`
 }
 
 async function getTop(parameter, text, pool)

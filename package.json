@@ -13,7 +13,7 @@
     "dotenv": "^16.0.3",
     "fs": "^0.0.1-security",
     "keksik-vk-api": "^1.0.2",
-    "mysql2": "^3.3.0",
+    "mysql2": "^3.3.5",
     "nodemon": "^2.0.22",
     "vk-io": "^4.8.1",
     "vk-io-question": "^3.1.1"
