@@ -42,7 +42,7 @@ function steal(context, user, data, vk, pool, selectedUser, id, sendMessage)
     
     sendMessage(id, `[id${ context.senderId }|Вор] украл у вас ${ utils.prettify(sum) } ₽, отомсти ему! ID: ${ context.senderId }`);
 
-    utils.save('./data/data.json', data);
+    utils.save('./data.json', data);
 }
 
 module.exports = async (context, user, data, vk, pool, getUser, sendMessage) =>

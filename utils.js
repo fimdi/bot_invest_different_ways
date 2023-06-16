@@ -6,9 +6,9 @@ function random(min, max)
   	return Math.floor(rand);
 }
 
-async function save(way, data) 
+async function save(path, data) 
 {
-  	fs.writeFileSync(way, JSON.stringify(data, null, '\t'));
+  	fs.writeFileSync(path, JSON.stringify(data, null, '\t'));
 }
 
 function prettify(num) 
