@@ -1,7 +1,7 @@
 const { resolveResource } = require('vk-io');
 const utils = require('../utils.js');
 
-function steal(context, user, data, vk, pool, selectedUser, id, sendMessage)
+function steal(context, user, data, pool, selectedUser, id, sendMessage)
 {
     let sum = utils.rounding(user.invested * 0.1); // 10% от инвестирования
 
@@ -21,8 +21,7 @@ function steal(context, user, data, vk, pool, selectedUser, id, sendMessage)
         stolenFromUser = ?
     WHERE 
         id = ?`, [selectedUser.balanceForWithdrawal - sum, selectedUser.stolenFromUser + sum, id]);
-    // selectedUser.balanceForWithdrawal = utils.rounding( selectedUser.balanceForWithdrawal - sum );
-    // selectedUser.stolenFromUser = utils.rounding( selectedUser.stolenFromUser + sum );
+
     pool.query(`
     UPDATE
         users
@@ -33,9 +32,6 @@ function steal(context, user, data, vk, pool, selectedUser, id, sendMessage)
     WHERE
         id = ?
     `, [user.balanceForWithdrawal + halfSum, user.stolenByUser + sum, context.senderId]);
-    // user.balanceForWithdrawal = utils.rounding( user.balanceForWithdrawal + halfSum ); // половина пользователю
-    // user.stolenByUser = utils.rounding( user.stolenByUser + sum );
-    // user.attemptsSteal -= 1;
     data.statistics.incomeFromThefts = utils.rounding( data.statistics.incomeFromThefts + halfSum ); // половина боту
 
     context.send(`Вы украли ${ utils.prettify(sum) } ₽, но донести до дома вы смогли только половину: ${ utils.prettify(halfSum) } ₽`);
@@ -48,7 +44,7 @@ function steal(context, user, data, vk, pool, selectedUser, id, sendMessage)
 module.exports = async (context, user, data, vk, pool, getUser, sendMessage) =>
 {
     let selectedUser = await getUser(context.text);
-    if ( selectedUser ) return steal(context, user, data, vk, pool, selectedUser, +context.text, sendMessage);
+    if ( selectedUser ) return steal(context, user, data, pool, selectedUser, +context.text, sendMessage);
 
 	const resource = await resolveResource({ api: vk.api, resource: context.text })
 	.catch(err => { return context.send("Пользователь не найден"); });
@@ -56,7 +52,7 @@ module.exports = async (context, user, data, vk, pool, getUser, sendMessage) =>
 	if ( resource?.type == 'user' )
 	{
         selectedUser = await getUser(resource.id);
-		if ( selectedUser ) return steal(context, user, data, vk, pool, selectedUser, resource.id, sendMessage);
+		if ( selectedUser ) return steal(context, user, data, pool, selectedUser, resource.id, sendMessage);
 
 		return context.send("Данный пользователь не зарегистрирован в боте");
 	}

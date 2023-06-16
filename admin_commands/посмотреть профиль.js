@@ -1,21 +1,22 @@
 const utils = require('../utils.js');
 const { Keyboard } = require('vk-io');
 
-module.exports = async (context, arr, pool, getUser) => {
+module.exports = async (context, arr, pool, getUser) => 
+{
     if ( arr.length < 2 ) return context.send("Чего-то не хватает");
 
     let user = await getUser(arr[1]);
     let investmentMethod = "Отсутствует";
     
-    if (user.investmentMethodId != null) 
+    if ( user.investmentMethodId != null ) 
     {
         let [[res]] = await pool.query('SELECT * FROM usersInvestmentMethods WHERE id = ?', [user.investmentMethodId]);
-        investmentMethod = `№ ${res.number}
-${res.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs(res.incomeDayPercentage)} %
-Налог в день: ${utils.prettify(res.taxDayRubles)} ₽
-Срок ${res.term} ${ utils.lineEnding(res.term, ["день", "дня", "дней"]) }
+        investmentMethod = `№ ${ res.number }
+${ res.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs(res.incomeDayPercentage) }%
+Налог в день: ${ utils.prettify(res.taxDayRubles) } ₽
+Срок ${ res.term } ${ utils.lineEnding(res.term, ["день", "дня", "дней"]) }
         
-Осталось дней: ${res.daysLeft}`;
+Осталось дней: ${ res.daysLeft }`;
     }
     let id = user.id;
     

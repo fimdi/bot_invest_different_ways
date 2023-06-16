@@ -1,7 +1,8 @@
 const { Keyboard } = require('vk-io');
 
-const withdraw = (context, user) => {
-    if (user.ban) return context.send('Ваш аккаунт заморожен, обратитесь к админу');
+module.exports = (context, user) => 
+{
+    if ( user.ban ) return context.send('Ваш аккаунт заморожен, обратитесь к админу');
     
     context.send(`☑Выберите способ вывода (минимальный вывод 10 ₽):`, {
         keyboard: Keyboard.builder()
@@ -19,5 +20,3 @@ const withdraw = (context, user) => {
         .inline()
     });
 }
-
-module.exports = withdraw;

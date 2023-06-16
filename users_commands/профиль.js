@@ -1,24 +1,25 @@
 const utils = require('../utils.js');
 const { Keyboard } = require('vk-io');
 
-const profile = async (context, user, pool) => {
+module.exports = async (context, user, pool) => 
+{
     let investmentMethod = "Отсутствует";
+    let id = user.id;
     
-    if (user.investmentMethodId != null) 
+    if ( user.investmentMethodId != null ) 
     {
         let [[res]] = await pool.query('SELECT * FROM usersInvestmentMethods WHERE id = ?', [user.investmentMethodId]);
-        investmentMethod = `№ ${res.number}
-${res.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs( res.incomeDayPercentage )}%
-Налог в день: ${utils.prettify(+res.taxDayRubles)} ₽
-Срок ${res.term} ${utils.lineEnding(res.term, ["день", "дня", "дней"])}
+        investmentMethod = `№ ${ res.number }
+${ res.incomeDayPercentage >= 0 ? "Доход" : "Расход" } в день: ${ Math.abs( res.incomeDayPercentage ) }%
+Налог в день: ${ utils.prettify(+res.taxDayRubles) } ₽
+Срок ${ res.term } ${ utils.lineEnding(res.term, ["день", "дня", "дней"]) }
 
-Осталось дней: ${res.daysLeft}`;
+Осталось дней: ${ res.daysLeft }`;
     }
-    let id = user.id;
     
     context.send(
 `🖥ПРОФИЛЬ
-ID: ${id}
+ID: ${ id }
         
 💰БАЛАНС
 Для вывода: ${ utils.prettify(user.balanceForWithdrawal) } ₽
@@ -55,5 +56,3 @@ ${ investmentMethod }
     .inline()
 });
 }
-
-module.exports = profile;

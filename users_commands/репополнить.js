@@ -1,9 +1,7 @@
-const reReplenishment = (context, users) =>
+module.exports = (context) =>
 {
     context.send(
 `Репополнение - перевод заработанных денег на баланс для инвестирования.
 
 Отправьте "да", если согласны на репополнение.`);
 }
-
-module.exports = reReplenishment;

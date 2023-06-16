@@ -1,6 +1,7 @@
 const { Keyboard } = require('vk-io');
 
-const top = (context) => {
+module.exports = (context) => 
+{
     context.send(`Выбирети топ:`, {
         keyboard: Keyboard.builder()
         .textButton({
@@ -25,5 +26,3 @@ const top = (context) => {
         .inline()
     });
 }
-
-module.exports = top;

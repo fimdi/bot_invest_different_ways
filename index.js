@@ -117,7 +117,7 @@ vk.updates.on('message_new', async (context) =>
 	}
 
 	if ( user?.usedInvestmentMethods == null ) user.usedInvestmentMethods = [];
-	//---
+	
 	if ( /^(Начать|Start|Старт|Меню|Запуск|Привет|Хай|Здравствуйте|Hello)$/i.test(text) )
 		return require('./users_commands/меню.js')(context);
 	
@@ -184,18 +184,6 @@ vk.updates.on('message_new', async (context) =>
 		return require('./users_commands/репополнить.js')(context);
 	}
 
-	if ( /^промокоды$/i.test(text) && config.owners.includes(context.senderId) )
-	{
-		let [promoCodes] = await pool.query(`SELECT * FROM promoCodes`);
-
-		promoCodes = promoCodes.map(promoCode => 
-`Промокод "${promoCode.name}" 
-Cумма ${utils.prettify(promoCode.amount)} ₽ 
-Количество активаций ${promoCode.numberActivations}`).join("\n\n");
-
-		return context.send("Промокоды\n\n" + (promoCodes.length == 0 ? "Отсутствуют" : promoCodes));
-	}
-
 	if ( config.owners.includes(context.senderId) )
 	{
 		if ( /^Добавить|^Убавить|^Присвоить/i.test(text) ) return require('./admin_commands/редактировать.js')(context, arr, pool, getUser, text);
@@ -203,13 +191,6 @@ Cумма ${utils.prettify(promoCode.amount)} ₽
 		if ( /^Пополнить/i.test(text) ) return require('./admin_commands/пополнить.js')(context, user, arr, pool, getUser);
 		if ( /^Вывести/i.test(text) ) return require('./admin_commands/вывести.js')(context, user, arr, pool, getUser);
 		
-		if ( /^Удалить/i.test(text) )
-		{
-			if ( arr[1].toLowerCase() == "промокод" ) return require('./admin_commands/удалить промокод.js')(context, arr, pool);
-			return require('./admin_commands/удалить.js')(context, arr, pool, getUser);
-		}
-		if ( /^Создать/i.test(text) ) return require('./admin_commands/создать.js')(context, arr, pool, getUser, vk);
-
 		if ( /^СпособИнвестиции/i.test(text) ) return require('./admin_commands/способ инвестиции.js')(context, arr, pool);
 		if ( /^Промокод/i.test(text) ) return require('./admin_commands/промокод.js')(context, arr, pool);
 
@@ -218,6 +199,14 @@ Cумма ${utils.prettify(promoCode.amount)} ₽
 		if ( /^Профиль/i.test(text) ) return require('./admin_commands/посмотреть профиль.js')(context, arr, pool, getUser);
 
 		if ( /^Команды/i.test(text) ) return require('./admin_commands/команды.js')(context);
+		if ( /^промокоды$/i.test(text) ) return require('./admin_commands/промокоды.js')(context);
+
+		if ( /^Создать/i.test(text) ) return require('./admin_commands/создать.js')(context, arr, pool, getUser, vk);
+		if ( /^Удалить/i.test(text) )
+		{
+			if ( arr[1].toLowerCase() == "промокод" ) return require('./admin_commands/удалить промокод.js')(context, arr, pool);
+			return require('./admin_commands/удалить.js')(context, arr, pool, getUser);
+		}
 	}
 	
 	if ( text.toLowerCase() == "да" &&  context.state.user?.pastMessage == "репополнить" ) 

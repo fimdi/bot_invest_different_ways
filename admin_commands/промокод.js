@@ -9,5 +9,5 @@ module.exports = (context, arr, pool) =>
     pool.query(`INSERT INTO promoCodes VALUES(?, ?, ?, ?)`,
     [arr[1], arr[2], arr[3], JSON.stringify([])]);
 
-    return context.send(`Промокод "${arr[1]}" на сумму ${utils.prettify(arr[2])} ₽ и количество активаций ${arr[3]} создан`);
+    return context.send(`Промокод "${ arr[1] }" на сумму ${ utils.prettify(arr[2]) } ₽ и количество активаций ${ arr[3] } создан`);
 }

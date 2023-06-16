@@ -1,4 +1,4 @@
-const invest = async (context, user, pool) =>
+module.exports = async (context, user, pool) =>
 {
 	let number = +context.text;
 	if ( user.balanceForInvestment == 0 ) return context.send("Вам нечего инвестировать");
@@ -8,7 +8,7 @@ const invest = async (context, user, pool) =>
 	if ( selectedMethod == undefined ) return context.send("Такого способа инвестирования нет");
 	if ( user.balanceForInvestment > selectedMethod.maximumInvestment ) return context.send("Этот способ пока что не подходит");
 	///
-	if (user.investmentMethodId != null) pool.query(`DELETE FROM usersInvestmentMethods WHERE id = ?`, 
+	if ( user.investmentMethodId != null ) pool.query(`DELETE FROM usersInvestmentMethods WHERE id = ?`, 
 	[user.investmentMethodId]);
 	
 	let [res] = await pool.query('INSERT INTO usersInvestmentMethods(`number`, `incomeDayPercentage`, `taxDayRubles`, `term`, `daysLeft`) VALUES(?, ?, ?, ?, ?)', 
@@ -21,5 +21,3 @@ const invest = async (context, user, pool) =>
 	
     context.send("Успешно инвестировали"); 
 }
-
-module.exports = invest;

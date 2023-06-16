@@ -1,5 +1,4 @@
-const replenishmentKeksik = (context) => {
+module.exports = (context) => 
+{
     context.send("Не доступно");
 }
-
-module.exports = replenishmentKeksik;

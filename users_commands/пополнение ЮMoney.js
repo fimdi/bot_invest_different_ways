@@ -1,6 +1,4 @@
-const replenishmentYoomoney = (context) =>
+module.exports = (context) =>
 {
     context.send("Не доступно");
 }
-
-module.exports = replenishmentYoomoney;

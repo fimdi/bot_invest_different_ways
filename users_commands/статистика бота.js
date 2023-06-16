@@ -1,6 +1,6 @@
 const utils = require('../utils.js');
 
-const botStatistics = async (context, data, pool) =>
+module.exports = async (context, data, pool) =>
 {
     const [[res]] = await pool.query(`SELECT COUNT(*) AS users, SUM(replenished) AS replenished, SUM(withdrawn) AS withdrawn, SUM(invested) AS invested FROM users`);
     
@@ -16,5 +16,3 @@ const botStatistics = async (context, data, pool) =>
     
 🕙Мы работаем: ${ data.statistics.weWork } ${ utils.lineEnding(data.statistics.weWork, ["день", "дня", "дней"]) }`);
 }
-
-module.exports = botStatistics;

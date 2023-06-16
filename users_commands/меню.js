@@ -1,7 +1,8 @@
 const { Keyboard } = require('vk-io');
 const config = require('../config.json');
 
-const menu = (context) => {
+module.exports = (context) => 
+{
     let text = context.text.toLowerCase() == "меню" ? "Меню:" : 
 `Приветствую тебя!
 Здесь ты сможешь заработать рубли!
@@ -52,5 +53,3 @@ const menu = (context) => {
         })
     });
 }
-
-module.exports = menu;

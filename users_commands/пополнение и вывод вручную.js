@@ -1,7 +1,7 @@
 const { Keyboard } = require('vk-io');
 const config = require('../config.json');
 
-const manually = (context) => 
+module.exports = (context) => 
 {
     context.send(`✉ПИШИТЕ —> [id${ config.owners[0] }|админу]`, {
     keyboard: Keyboard.builder()
@@ -12,5 +12,3 @@ const manually = (context) =>
         .inline()
     })
 }
-
-module.exports = manually;

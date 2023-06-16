@@ -1,6 +1,7 @@
 const { Keyboard } = require('vk-io');
 
-const replenish = (context) => {
+module.exports = (context) => 
+{
     context.send(`💳Выберите способ пополнения:`, {
         keyboard: Keyboard.builder()
         .textButton({
@@ -24,5 +25,3 @@ const replenish = (context) => {
         .inline()
     });
 }
-
-module.exports = replenish;
