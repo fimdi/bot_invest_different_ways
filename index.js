@@ -114,7 +114,7 @@ vk.updates.on('message_new', async (context) =>
 		[context.senderId, userData.first_name]);
 
 		user = await getUser(context.senderId);
-		data.newUsers += 1;
+		data.statistics.newUsers += 1;
 		utils.save('./data.json', data);
 	}
 
