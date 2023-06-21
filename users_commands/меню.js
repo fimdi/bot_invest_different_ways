@@ -51,5 +51,10 @@ module.exports = (context) =>
             label: '💻Статистика бота',
             color: Keyboard.PRIMARY_COLOR
         })
+        .row()
+        .textButton({
+            label: '👥Реферальная система',
+            color: Keyboard.PRIMARY_COLOR
+        })
     });
 }

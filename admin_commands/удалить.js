@@ -9,8 +9,8 @@ module.exports = async (context, arr, pool, getUser) =>
     
     if ( parameter == "аккаунт" )
     {
-        pool.query(`DELETE FROM usersInvestmentMethods WHERE id = ?`, [user.investmentMethodId]);
-        pool.query(`DELETE FROM users WHERE id = ?`, [arr[1]]);
+        await pool.query(`DELETE FROM usersInvestmentMethods WHERE id = ?`, [user.investmentMethodId]);
+        await pool.query(`DELETE FROM users WHERE id = ?`, [arr[1]]);
 
         context.send(`Имя: ${ user.name }\nАккаунт удалён`)
     }

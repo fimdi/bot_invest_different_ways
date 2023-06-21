@@ -12,7 +12,7 @@ const pool = mysql.createPool({
     port: 3306,
     user: 'a0672554_Victor',
     password: '59rFx2RvVPGDZ9bq',
-    database: 'a0672554_investing_DW_Victor',
+    database: 'a0672554_investing_DW_Den',
 	charset: 'utf8mb4_general_ci'
 });
 const vk = new VK({
@@ -71,6 +71,8 @@ async function getUser(id)
 		user.replenished = Number(user.replenished);
 		user.stolenFromUser = Number(user.stolenFromUser);
 		user.stolenByUser = Number(user.stolenByUser);
+
+		if ( user?.usedInvestmentMethods == null ) user.usedInvestmentMethods = [];
 	}
 
 	return user;
@@ -94,17 +96,7 @@ let cache = {};
 
 vk.updates.on('message_new', async (context) => 
 {
-	if ( context.text == "" ) return;
-
-	let text = context.text;
-	let arr = text.split(" ");
 	let user = await getUser(context.senderId);
-
-	if ( context.senderId in cache )
-	{
-		context.state.user = cache[context.senderId];
-		delete cache[context.senderId];
-	}
 
 	if ( !user )
 	{
@@ -118,7 +110,34 @@ vk.updates.on('message_new', async (context) =>
 		utils.save('./data.json', data);
 	}
 
-	if ( user?.usedInvestmentMethods == null ) user.usedInvestmentMethods = [];
+	if ( context.referralValue && context.referralValue != context.senderId )
+	{
+		let refovod = await getUser(context.referralValue);;
+		let [[referral]] = await pool.query(`SELECT * FROM referrals WHERE referralId = ?`, [context.senderId]);
+
+		if ( refovod && !referral )
+		{
+			pool.query(`INSERT INTO referrals(userId, referralId) VALUES (?, ?)`, [context.referralValue, context.senderId]);
+			pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ? WHERE id = ?`, [config.receive_referral, context.senderId]);
+			pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ? WHERE id = ?`, [config.receive_refovod, context.referralValue]);
+
+			user.balanceForInvestment += config.receive_referral;
+
+			context.send(`Вы перешли по ссылке [id${context.referralValue}|пользователя] и получили ${config.receive_referral} ₽`);
+			sendMessage(context.referralValue, `По вашей ссылке перешёл [id${context.senderId}|пользователь] и вы получили ${config.receive_refovod} ₽`);
+		}
+	}
+
+	if ( context.senderId in cache )
+	{
+		context.state.user = cache[context.senderId];
+		delete cache[context.senderId];
+	}
+
+	if ( context.text == "" ) return;
+
+	let text = context.text;
+	let arr = text.split(" ");
 	
 	if ( /^(Начать|Start|Старт|Меню|Запуск|Привет|Хай|Здравствуйте|Hello)$/i.test(text) )
 		return require('./users_commands/меню.js')(context);
@@ -158,6 +177,9 @@ vk.updates.on('message_new', async (context) =>
 	
 	if ( /^(📝Активировать промокод|Активировать промокод)$/i.test(text) )
 		return require('./users_commands/активировать промокод.js')(context, pool);
+
+	if ( /^(👥Реферальная система|Реферальная система)$/i.test(text) )
+		return require('./users_commands/реферальная система.js')(context, pool, vk);
 
 	if ( /^Кексик$/i.test(text) && context.messagePayload?.command == "пополнение" )
 		return require('./users_commands/пополнение кексиком.js')(context);
