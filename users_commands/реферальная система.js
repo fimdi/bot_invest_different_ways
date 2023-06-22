@@ -8,8 +8,6 @@ module.exports = async (context, pool, vk) =>
         return data.short_url
     });
     let [userReferrals] = await pool.query(`SELECT * FROM referrals WHERE userId = ?`, [context.senderId]);
-    
-    console.log(userReferrals);
 
     context.send(`🔀Ваша реферальная ссылка:
 ${refLink}
