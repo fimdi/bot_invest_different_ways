@@ -107,10 +107,11 @@ vk.updates.on('message_new', async (context) =>
 
 		user = await getUser(context.senderId);
 		data.statistics.newUsers += 1;
+		context.isNew = true;
 		utils.save('./data.json', data);
 	}
 
-	if ( context.referralValue && context.referralValue != context.senderId )
+	if ( context.referralValue && context.referralValue != context.senderId && context.isNew )
 	{
 		let refovod = await getUser(context.referralValue);;
 		let [[referral]] = await pool.query(`SELECT * FROM referrals WHERE referralId = ?`, [context.senderId]);
