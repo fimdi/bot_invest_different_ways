@@ -18,5 +18,5 @@ module.exports = async (context, pool) =>
 	
 	if ( promoCode.numberActivations <= 0 ) pool.query(`DELETE FROM promoCodes WHERE name = ?`, [text]);
 
-	return context.send(`Вы успешно активировали промокод на сумму ${ utils.prettify(sum) } ₽`);
+	return context.send(`Вы успешно активировали промокод на сумму ${utils.prettify(sum)} ₽`);
 }

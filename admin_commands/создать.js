@@ -15,7 +15,7 @@ module.exports = async (context, arr, pool, getUser, vk) =>
 
 		user = await getUser(arr[1]);
 
-        context.send(`Имя: ${ user?.name }\nАккаунт создан`)
+        context.send(`Имя: ${user.name}\nАккаунт создан`)
     }
     if ( parameter == "способинвестиции" )
     {
@@ -35,13 +35,13 @@ module.exports = async (context, arr, pool, getUser, vk) =>
 	    [user.balanceForInvestment, 0, res.insertId, JSON.stringify(user.usedInvestmentMethods), arr[1]]);
 
         let [[selectedUserMethod]] = await pool.query('SELECT * FROM usersInvestmentMethods WHERE id = ?', [res.insertId]);
-        let investmentMethod = `№ ${ selectedUserMethod.number }
-${ selectedUserMethod.incomeDayPercentage >= 0 ? "Доход" : "Расход" } в день: ${ Math.abs(selectedUserMethod.incomeDayPercentage) }%
-Налог в день: ${ utils.prettify(selectedUserMethod.taxDayRubles) } ₽
-Срок ${ selectedUserMethod.term } ${ utils.lineEnding(selectedUserMethod.term, ["день", "дня", "дней"]) }
+        let investmentMethod = `№ ${selectedUserMethod.number}
+${selectedUserMethod.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs(selectedUserMethod.incomeDayPercentage)}%
+Налог в день: ${utils.prettify(selectedUserMethod.taxDayRubles)} ₽
+Срок ${selectedUserMethod.term} ${utils.lineEnding(selectedUserMethod.term, ["день", "дня", "дней"])}
 
-Осталось дней: ${ selectedUserMethod.daysLeft }`;
+Осталось дней: ${selectedUserMethod.daysLeft}`;
 
-        context.send(`Имя: ${ user.name }\nСпособ инвестиции создан\n${ investmentMethod }`)
+        context.send(`Имя: ${user.name}\nСпособ инвестиции создан\n${investmentMethod}`)
     }
 }

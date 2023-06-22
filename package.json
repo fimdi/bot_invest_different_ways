@@ -6,7 +6,11 @@
   "scripts": {
     "start": "nodemon --ignore data/ index.js"
   },
-  "author": "",
+  "author": {
+    "name": "Victor Osipov",
+    "email": "victoryosipov25@gmail.com",
+    "url": "https://vk.com/id566928444"
+  },
   "license": "ISC",
   "dependencies": {
     "cron": "^2.3.0",

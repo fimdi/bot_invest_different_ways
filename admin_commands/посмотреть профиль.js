@@ -11,12 +11,12 @@ module.exports = async (context, arr, pool, getUser) =>
     if ( user.investmentMethodId != null ) 
     {
         let [[res]] = await pool.query('SELECT * FROM usersInvestmentMethods WHERE id = ?', [user.investmentMethodId]);
-        investmentMethod = `№ ${ res.number }
-${ res.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs(res.incomeDayPercentage) }%
-Налог в день: ${ utils.prettify(res.taxDayRubles) } ₽
-Срок ${ res.term } ${ utils.lineEnding(res.term, ["день", "дня", "дней"]) }
+        investmentMethod = `№ ${res.number}
+${res.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${Math.abs(res.incomeDayPercentage)}%
+Налог в день: ${utils.prettify(res.taxDayRubles)} ₽
+Срок ${res.term} ${utils.lineEnding(res.term, ["день", "дня", "дней"])}
         
-Осталось дней: ${ res.daysLeft }`;
+Осталось дней: ${res.daysLeft}`;
     }
     let id = user.id;
     
@@ -25,20 +25,20 @@ ${ res.incomeDayPercentage >= 0 ? "Доход" : "Расход"} в день: ${
 ID: ${id}
         
 💰БАЛАНС
-Для вывода: ${ utils.prettify(user.balanceForWithdrawal) } ₽
-Для инвестирования: ${ utils.prettify(user.balanceForInvestment) } ₽
+Для вывода: ${utils.prettify(user.balanceForWithdrawal)} ₽
+Для инвестирования: ${utils.prettify(user.balanceForInvestment)} ₽
         
 📑ИНВЕСТИРОВАННО
--> ${ utils.prettify(user.invested) } ₽
+-> ${utils.prettify(user.invested)} ₽
         
 ⚙СПОСОБ ИНВЕСТИЦИИ
-${ investmentMethod }
+${investmentMethod}
 
 🗄СТАТИСТИКА
-Выведено: ${ utils.prettify(user.withdrawn) } ₽
-Пополнено: ${ utils.prettify(user.replenished) } ₽
-Украдено у вас: ${ utils.prettify(user.stolenFromUser) } ₽
-Украли вы: ${ utils.prettify(user.stolenByUser) } ₽`, user.balanceForWithdrawal && !user.protection ? {
+Выведено: ${utils.prettify(user.withdrawn)} ₽
+Пополнено: ${utils.prettify(user.replenished)} ₽
+Украдено у вас: ${utils.prettify(user.stolenFromUser)} ₽
+Украли вы: ${utils.prettify(user.stolenByUser)} ₽`, user.balanceForWithdrawal && !user.protection ? {
     keyboard: Keyboard.builder()
     .textButton({
         label: '📝Активировать промокод',

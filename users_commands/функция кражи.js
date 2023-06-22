@@ -34,9 +34,9 @@ function steal(context, user, data, pool, selectedUser, id, sendMessage)
     `, [user.balanceForWithdrawal + halfSum, user.stolenByUser + sum, context.senderId]);
     data.statistics.incomeFromThefts = utils.rounding( data.statistics.incomeFromThefts + halfSum ); // половина боту
 
-    context.send(`Вы украли ${ utils.prettify(sum) } ₽, но донести до дома вы смогли только половину: ${ utils.prettify(halfSum) } ₽`);
+    context.send(`Вы украли ${utils.prettify(sum)} ₽, но донести до дома вы смогли только половину: ${utils.prettify(halfSum)} ₽`);
     
-    sendMessage(id, `[id${ context.senderId }|Вор] украл у вас ${ utils.prettify(sum) } ₽, отомсти ему! ID: ${ context.senderId }`);
+    sendMessage(id, `[id${context.senderId}|Вор] украл у вас ${utils.prettify(sum)} ₽, отомсти ему! ID: ${context.senderId}`);
 
     utils.save('./data.json', data);
 }

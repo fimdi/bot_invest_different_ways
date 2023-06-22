@@ -10,6 +10,11 @@ module.exports = (context) =>
         })
         .row()
         .textButton({
+            label: '💰Магнаты',
+            color: Keyboard.SECONDARY_COLOR
+        })
+        .row()
+        .textButton({
             label: '🖐Воры',
             color: Keyboard.SECONDARY_COLOR
         })
@@ -20,7 +25,7 @@ module.exports = (context) =>
         })
         .row()
         .textButton({
-            label: '💰Магнаты',
+            label: '👥Рефоводы',
             color: Keyboard.SECONDARY_COLOR
         })
         .inline()

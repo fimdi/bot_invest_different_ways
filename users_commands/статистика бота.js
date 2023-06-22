@@ -7,12 +7,12 @@ module.exports = async (context, data, pool) =>
     context.send(
 `💻Статистика бота:
 
-👨Пользователей: ${ res.users }
-👥Новых за сегодня: ${ data.statistics.newUsers }
+👨Пользователей: ${res.users}
+👥Новых за сегодня: ${data.statistics.newUsers}
     
-📥Пополнено: ${ utils.rounding(res.replenished) } ₽
-📤Выведено: ${ utils.rounding(res.withdrawn) } ₽
-🏦Инвестировано: ${ utils.rounding(res.invested) } ₽
+📥Пополнено: ${utils.rounding(res.replenished)} ₽
+📤Выведено: ${utils.rounding(res.withdrawn)} ₽
+🏦Инвестировано: ${utils.rounding(res.invested)} ₽
     
-🕙Мы работаем: ${ data.statistics.weWork } ${ utils.lineEnding(data.statistics.weWork, ["день", "дня", "дней"]) }`);
+🕙Мы работаем: ${data.statistics.weWork} ${utils.lineEnding(data.statistics.weWork, ["день", "дня", "дней"])}`);
 }

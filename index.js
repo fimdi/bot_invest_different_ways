@@ -165,6 +165,9 @@ vk.updates.on('message_new', async (context) =>
 	
 	if ( /^(⏳Инвесторы|Инвесторы)$/i.test(text) )
 		return require('./users_commands/топ инвесторов.js')(context, pool);
+
+	if ( /^(👥Рефоводы|Рефоводы)$/i.test(text) )
+		return require('./users_commands/топ рефоводов.js')(context, pool);
 	
 	if ( /^Вручную$/i.test(text) )
 		return require('./users_commands/пополнение и вывод вручную.js')(context);
