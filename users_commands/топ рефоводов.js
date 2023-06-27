@@ -10,7 +10,9 @@ async function getTopRefovods(pool)
     WHERE
         referrals.userId = users.id
     GROUP BY
-        userId DESC LIMIT 10`);
+        userId
+    ORDER BY
+        numberReferrals DESC LIMIT 10`);
 
     const top = users.map(el => `${i++}) [id${el.id}|${el.name}] — привёл ${utils.prettify(el.numberReferrals)}`);
     if ( top.length < 10 )

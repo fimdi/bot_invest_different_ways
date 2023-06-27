@@ -12,7 +12,7 @@ const pool = mysql.createPool({
     port: 3306,
     user: 'a0672554_Victor',
     password: '59rFx2RvVPGDZ9bq',
-    database: 'a0672554_investing_DW_Den',
+    database: 'a0672554_investing_DW_Victor',
 	charset: 'utf8mb4_general_ci'
 });
 const vk = new VK({
@@ -24,7 +24,7 @@ const vk = new VK({
 const questionManager = new QuestionManager();
 vk.updates.use(questionManager.middleware);
 
-function everyDay()
+async function everyDay()
 {
 	const millisecondsInDay = 86400000;
 	let daysPassed = Math.floor( (Date.now() - data.onlineDate) / millisecondsInDay );
@@ -33,8 +33,8 @@ function everyDay()
 	data.statistics.newUsers = 0;
 	data.statistics.weWork += 1;
 
-	pool.query('UPDATE users SET attemptsSteal = 1 WHERE attemptsSteal = 0');
-	pool.query('UPDATE users SET protection = false WHERE protection = true');
+	await pool.query('UPDATE users SET attemptsSteal = 1 WHERE attemptsSteal = 0');
+	await pool.query('UPDATE users SET protection = false WHERE protection = true');
 	pool.query(`
 	UPDATE 
 		users u, 
