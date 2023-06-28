@@ -216,8 +216,8 @@ vk.updates.on('message_new', async (context) =>
 	{
 		if ( /^Добавить|^Убавить|^Присвоить/i.test(text) ) return require('./admin_commands/редактировать.js')(context, arr, pool, getUser, text);
 
-		if ( /^Пополнить/i.test(text) ) return require('./admin_commands/пополнить.js')(context, user, arr, pool, getUser);
-		if ( /^Вывести/i.test(text) ) return require('./admin_commands/вывести.js')(context, user, arr, pool, getUser);
+		if ( /^Пополнить/i.test(text) ) return require('./admin_commands/пополнить.js')(context, arr, pool, getUser);
+		if ( /^Вывести/i.test(text) ) return require('./admin_commands/вывести.js')(context, arr, pool, getUser);
 		
 		if ( /^СпособИнвестиции/i.test(text) ) return require('./admin_commands/способ инвестиции.js')(context, arr, pool);
 		if ( /^Промокод/i.test(text) ) return require('./admin_commands/промокод.js')(context, arr, pool);

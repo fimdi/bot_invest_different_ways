@@ -1,6 +1,8 @@
-module.exports = async (context, user, arr, pool, getUser) =>
+module.exports = async (context, arr, pool, getUser) =>
 {
     if ( arr.length < 2 ) return context.send("Чего-то не хватает");
+    
+    let user = await getUser(arr[1]);
 
     if ( arr[2] == undefined )
     {
