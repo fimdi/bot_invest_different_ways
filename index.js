@@ -135,7 +135,7 @@ vk.updates.on('message_new', async (context) =>
 		delete cache[context.senderId];
 	}
 
-	if ( context.text == "" ) return;
+	if ( !context.text ) return;
 
 	let text = context.text;
 	let arr = text.split(" ");
@@ -214,23 +214,23 @@ vk.updates.on('message_new', async (context) =>
 
 	if ( config.owners.includes(context.senderId) )
 	{
-		if ( /^Добавить|^Убавить|^Присвоить/i.test(text) ) return require('./admin_commands/редактировать.js')(context, arr, pool, getUser, text);
+		if ( /^Добавить |^Убавить |^Присвоить /i.test(text) ) return require('./admin_commands/редактировать.js')(context, arr, pool, getUser, text);
 
-		if ( /^Пополнить/i.test(text) ) return require('./admin_commands/пополнить.js')(context, arr, pool, getUser);
-		if ( /^Вывести/i.test(text) ) return require('./admin_commands/вывести.js')(context, arr, pool, getUser);
+		if ( /^Пополнить /i.test(text) ) return require('./admin_commands/пополнить.js')(context, arr, pool, getUser);
+		if ( /^Вывести /i.test(text) ) return require('./admin_commands/вывести.js')(context, arr, pool, getUser);
 		
-		if ( /^СпособИнвестиции/i.test(text) ) return require('./admin_commands/способ инвестиции.js')(context, arr, pool);
-		if ( /^Промокод/i.test(text) ) return require('./admin_commands/промокод.js')(context, arr, pool);
+		if ( /^СпособИнвестиции /i.test(text) ) return require('./admin_commands/способ инвестиции.js')(context, arr, pool);
+		if ( /^Промокод /i.test(text) ) return require('./admin_commands/промокод.js')(context, arr, pool);
 
-		if ( /^Бан/i.test(text) ) return require('./admin_commands/бан.js')(context, arr, pool, getUser);
-		if ( /^Разбан/i.test(text) ) return require('./admin_commands/разбан.js')(context, arr, pool, getUser);
-		if ( /^Профиль/i.test(text) ) return require('./admin_commands/посмотреть профиль.js')(context, arr, pool, getUser);
+		if ( /^Бан /i.test(text) ) return require('./admin_commands/бан.js')(context, arr, pool, getUser);
+		if ( /^Разбан /i.test(text) ) return require('./admin_commands/разбан.js')(context, arr, pool, getUser);
+		if ( /^Профиль /i.test(text) ) return require('./admin_commands/посмотреть профиль.js')(context, arr, pool, getUser);
 
-		if ( /^Команды/i.test(text) ) return require('./admin_commands/команды.js')(context);
-		if ( /^промокоды$/i.test(text) ) return require('./admin_commands/промокоды.js')(context);
+		if ( /^Команды$/i.test(text) ) return require('./admin_commands/команды.js')(context);
+		if ( /^Промокоды$/i.test(text) ) return require('./admin_commands/промокоды.js')(context, pool);
 
-		if ( /^Создать/i.test(text) ) return require('./admin_commands/создать.js')(context, arr, pool, getUser, vk);
-		if ( /^Удалить/i.test(text) )
+		if ( /^Создать /i.test(text) ) return require('./admin_commands/создать.js')(context, arr, pool, getUser, vk);
+		if ( /^Удалить /i.test(text) )
 		{
 			if ( arr[1].toLowerCase() == "промокод" ) return require('./admin_commands/удалить промокод.js')(context, arr, pool);
 			return require('./admin_commands/удалить.js')(context, arr, pool, getUser);
