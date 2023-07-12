@@ -5,7 +5,13 @@ const utils = require('./utils.js');
 const { VK, Keyboard } = require('vk-io');
 const { QuestionManager } = require('vk-io-question');
 const mysql = require('mysql2/promise');
-var CronJob = require('cron').CronJob;
+const CronJob = require('cron').CronJob;
+const express = require('express');
+const app = express();
+
+const PORT = 5050;
+
+app.use(express.urlencoded({ extended: true }));
 
 const pool = mysql.createPool({
     host: '141.8.195.65',
@@ -93,6 +99,29 @@ async function sendMessage(id, message)
 }
 
 let cache = {};
+let replenishmentIsExpected = {};
+
+app.post('/yoomoney/payment-acceptance', (req, res) =>
+{
+	const body = req.body;
+	if ( !utils.isAuthentic(body) ) return;
+
+	for (id in replenishmentIsExpected)
+	{
+		if (replenishmentIsExpected[id].amount == body.amount)
+		{
+			sendMessage(id, `✅Перевод найден. Баланс для инвестирования пополнен на ${body.amount} ₽`)
+
+			pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [body.amount, body.amount, id]);
+
+			clearTimeout(replenishmentIsExpected[id].timerId);
+			delete replenishmentIsExpected[id];
+			break;
+		}
+	}
+
+	res.send('OK');
+});
 
 vk.updates.on('message_new', async (context) => 
 {
@@ -188,12 +217,15 @@ vk.updates.on('message_new', async (context) =>
 	if ( /^Кексик$/i.test(text) && context.messagePayload?.command == "пополнение" )
 		return require('./users_commands/пополнение кексиком.js')(context);
 	
-	if ( /^ЮMoney$/i.test(text) && context.messagePayload?.command == "пополнение" )
+	if ( /^ЮMoney$/i.test(text) && context.messagePayload?.command == "вывод" )
 		return require('./users_commands/вывод ЮMoney.js')(context, user);
 	
-	if ( /^ЮMoney$/i.test(text) && context.messagePayload?.command == "вывод" )
-		return require('./users_commands/пополнение ЮMoney.js')(context);
-	
+	if ( /^ЮMoney$/i.test(text) && context.messagePayload?.command == "пополнение" )
+	{
+		cache[context.senderId] = { pastMessage: "пополнение yoomoney" };
+		return context.send(`⬇Сколько хочешь пополнить?`);
+	}
+
 	if ( /^(📑Инвестировать|Инвестировать)$/i.test(text) )
 	{
 		cache[context.senderId] = { pastMessage: "инвестировать" };
@@ -247,8 +279,14 @@ vk.updates.on('message_new', async (context) =>
 		return context.send("Деньги успешно переведены с баланса для вывода на баланс для инвестрования");
 	}
 
-	if ( !isNaN(text) && context.state.user?.pastMessage == "инвестировать" ) 
-		return require('./users_commands/функция инвестирования.js')(context, user, pool);
+	if ( !isNaN(text) ) 
+	{
+		if ( context.state.user?.pastMessage == "инвестировать" )
+			return require('./users_commands/функция инвестирования.js')(context, user, pool);
+
+		if ( context.state.user?.pastMessage == "пополнение yoomoney" )
+			return require('./users_commands/функция пополнения ЮMoney.js')(context, replenishmentIsExpected);
+	}
 
 	if ( context.state.user?.pastMessage == "украсть" )
 		return require('./users_commands/функция кражи.js')(context, user, data, vk, pool, getUser, sendMessage);
@@ -263,6 +301,11 @@ vk.updates.on('message_new', async (context) =>
 		.inline()
 	});
 });
+
+app.listen(PORT, () =>
+{
+	console.log(`Server started on port ${PORT}`);
+})
 
 async function run() 
 {

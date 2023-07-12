@@ -1,4 +1,5 @@
 const fs = require('fs');
+const crypto = require('crypto')
 
 function random(min, max) 
 {
@@ -95,6 +96,19 @@ function shuffle(array)
     return array;
 }
 
+function isAuthentic(obj)
+{
+    const notification_secret = "uSwwJd1AsFvwgVbTIS14C0tL";
+
+    const str = `${obj.notification_type}&${obj.operation_id}&${obj.amount}&${obj.currency}&${obj.datetime}&${obj.sender}&${obj.codepro}&${notification_secret}&${obj.label}`;
+    
+    const hash = crypto.createHash('sha1').update(str).digest('hex');
+    
+    console.log(hash)
+
+    return obj.sha1_hash == hash;
+}
+
 module.exports = {
     displayInvestmentMethod,
     rounding,
@@ -103,5 +117,6 @@ module.exports = {
     random,
     save,
     prettify,
-    shuffle
+    shuffle,
+    isAuthentic
 }

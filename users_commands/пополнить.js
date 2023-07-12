@@ -9,14 +9,14 @@ module.exports = (context) =>
             color: Keyboard.POSITIVE_COLOR
         })
         .textButton({
-            label: 'Кексик',
-            color: Keyboard.NEGATIVE_COLOR,
+            label: 'ЮMoney',
+            color: Keyboard.POSITIVE_COLOR,
             payload: {
                 command: 'пополнение'
             }
         })
         .textButton({
-            label: 'ЮMoney',
+            label: 'Кексик',
             color: Keyboard.NEGATIVE_COLOR,
             payload: {
                 command: 'пополнение'
