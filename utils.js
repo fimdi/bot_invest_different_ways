@@ -96,7 +96,7 @@ function shuffle(array)
     return array;
 }
 
-function isAuthentic(obj)
+function isAuthenticYoomoney(obj)
 {
     const notification_secret = "uSwwJd1AsFvwgVbTIS14C0tL";
 
@@ -109,6 +109,69 @@ function isAuthentic(obj)
     return obj.sha1_hash == hash;
 }
 
+function objectToArray(obj, arr, path)
+{
+    path = path === undefined ? "" : path + "/";
+
+    for (key in obj)
+    {
+        if ( typeof obj[key] == "object" )
+        {
+            objectToArray(obj[key], arr, path + key);
+        }
+        else
+        {
+            arr.push({key: path + key, value: obj[key]});
+        }
+    }
+}
+
+function isAuthenticKeksik(obj)
+{
+    let arr = [];
+    let hash = obj.hash;
+
+    delete obj.hash;
+
+    objectToArray(obj, arr);
+
+    arr.sort((a, b) => {
+        a = a.key; b = b.key;
+
+        if ( a > b ) return 1;
+        if ( a == b ) return 0;
+        if ( a < b ) return -1;
+    });
+
+    let str = "";
+
+    for (key of arr)
+    {
+        let value = key.value;
+        if ( typeof key.value == 'boolean' )
+        {
+            if ( key.value ) 
+                value = 1;
+            else 
+                value = "";
+        }
+        str = str + "," + value;
+    }
+
+    str = str.slice(1);
+    str = str + "," + "4f1e7006b59a86f2d646f04d6c7a020906bd901999ae483f71";
+
+    console.log(str)
+
+    const sha256_hash = crypto.createHash('sha256').update(str).digest('hex');
+    
+    console.log(`sha256_hash: ${sha256_hash}\nhash: ${hash}`)
+
+    return sha256_hash == hash;
+
+    //console.log(JSON.stringify(arr, null, 2));
+}
+
 module.exports = {
     displayInvestmentMethod,
     rounding,
@@ -118,5 +181,6 @@ module.exports = {
     save,
     prettify,
     shuffle,
-    isAuthentic
+    isAuthenticYoomoney,
+    isAuthenticKeksik
 }

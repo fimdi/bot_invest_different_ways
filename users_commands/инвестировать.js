@@ -17,7 +17,7 @@ module.exports = async (context, user, pool) =>
     let available = res.length - (user.usedInvestmentMethods === null ? 0 : user.usedInvestmentMethods.length);
     
     context.send(
-`🚤Выбирите способ инвестирования (отправте номер):
+`🚤Выберите способ инвестирования (отправте номер):
         
 Всего для вас доступно: ${available} ${utils.lineEnding(available, ["способ", "способа", "способов"])}
 

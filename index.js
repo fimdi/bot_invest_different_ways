@@ -11,16 +11,10 @@ const app = express();
 
 const PORT = 5050;
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const pool = mysql.createPool({
-    host: '141.8.195.65',
-    port: 3306,
-    user: 'a0672554_Victor',
-    password: '59rFx2RvVPGDZ9bq',
-    database: 'a0672554_investing_DW_Victor',
-	charset: 'utf8mb4_general_ci'
-});
+const pool = mysql.createPool(config.mysql_object);
 const vk = new VK({
 	token: config.group_token,
 	pollingGroupId: config.group_id,
@@ -37,12 +31,12 @@ async function everyDay()
 	if ( daysPassed < 1 ) return;
 
 	data.statistics.newUsers = 0;
-	data.statistics.weWork += 1;
+	data.statistics.weWork += daysPassed;
 
 	await pool.query('UPDATE users SET attemptsSteal = 1 WHERE attemptsSteal = 0');
 	await pool.query('UPDATE users SET protection = false WHERE protection = true');
 	pool.query(`
-	UPDATE 
+	UPDATE
 		users u, 
 		usersInvestmentMethods i
 	SET
@@ -101,30 +95,45 @@ async function sendMessage(id, message)
 let cache = {};
 let replenishmentIsExpected = {};
 
-app.post('/yoomoney/payment-acceptance', (req, res) =>
+// app.post('/yoomoney/payment-acceptance', (req, res) =>
+// {
+// 	const body = req.body;
+// 	if ( !utils.isAuthenticYoomoney(body) ) return;
+
+// 	for (id in replenishmentIsExpected)
+// 	{
+// 		if (replenishmentIsExpected[id].amount == body.amount)
+// 		{
+// 			sendMessage(id, `✅Перевод найден. Баланс для инвестирования пополнен на ${body.amount} ₽`)
+
+// 			pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [body.amount, body.amount, id]);
+
+// 			clearTimeout(replenishmentIsExpected[id].timerId);
+// 			delete replenishmentIsExpected[id];
+// 			break;
+// 		}
+// 	}
+
+// 	res.send('OK');
+// });
+
+app.post('/keksik/payment-acceptance', (req, res) =>
 {
-	const body = req.body;
-	if ( !utils.isAuthentic(body) ) return;
+	let body = req.body;
+    console.log(JSON.stringify(body));
+    if ( !isAuthenticKeksik(body) || body.type != "new_donate" || body.group != config.group_id ) return;
 
-	for (id in replenishmentIsExpected)
-	{
-		if (replenishmentIsExpected[id].amount == body.amount)
-		{
-			sendMessage(id, `✅Перевод найден. Баланс для инвестирования пополнен на ${body.amount} ₽`)
+	let amount = body.donate.amount, userId = body.donate.user;
+	pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [amount, amount, userId]);
+	sendMessage(userId, `✅Перевод найден. Баланс для инвестирования пополнен на ${amount} ₽`)
 
-			pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [body.amount, body.amount, id]);
-
-			clearTimeout(replenishmentIsExpected[id].timerId);
-			delete replenishmentIsExpected[id];
-			break;
-		}
-	}
-
-	res.send('OK');
+    res.send(`{"status": "ok", "code": "b422d6"}`);
 });
 
 vk.updates.on('message_new', async (context) => 
 {
+	if ( context.isChat ) return;
+
 	let user = await getUser(context.senderId);
 
 	if ( !user )
@@ -222,8 +231,9 @@ vk.updates.on('message_new', async (context) =>
 	
 	if ( /^ЮMoney$/i.test(text) && context.messagePayload?.command == "пополнение" )
 	{
-		cache[context.senderId] = { pastMessage: "пополнение yoomoney" };
-		return context.send(`⬇Сколько хочешь пополнить?`);
+		return context.send(`Не доступно`);
+		// cache[context.senderId] = { pastMessage: "пополнение yoomoney" };
+		// return context.send(`⬇Сколько хочешь пополнить?`);
 	}
 
 	if ( /^(📑Инвестировать|Инвестировать)$/i.test(text) )
@@ -261,6 +271,8 @@ vk.updates.on('message_new', async (context) =>
 		if ( /^Команды$/i.test(text) ) return require('./admin_commands/команды.js')(context);
 		if ( /^Промокоды$/i.test(text) ) return require('./admin_commands/промокоды.js')(context, pool);
 
+		if ( /^Перемотка /i.test(text) ) return require('./admin_commands/перемотка времени.js')(context, arr, pool, data);
+		
 		if ( /^Создать /i.test(text) ) return require('./admin_commands/создать.js')(context, arr, pool, getUser, vk);
 		if ( /^Удалить /i.test(text) )
 		{

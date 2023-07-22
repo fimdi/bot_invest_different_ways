@@ -1,10 +1,11 @@
 const { Keyboard } = require('vk-io');
+const config = require('../config.json');
 
 module.exports = (context, user) => 
 {
     if ( user.ban ) return context.send('Ваш аккаунт заморожен, обратитесь к админу');
     
-    context.send(`☑Выберите способ вывода (минимальный вывод 10 ₽):`, {
+    context.send(`☑Выберите способ вывода (минимальный вывод ${config.min_withdrawal} ₽):`, {
         keyboard: Keyboard.builder()
         .textButton({
             label: 'Вручную',

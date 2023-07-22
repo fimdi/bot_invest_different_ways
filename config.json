@@ -6,5 +6,17 @@
     "receive_refovod": 3,
     "receive_referral": 1,
 
-    "number_yoomoney": "+7 926 818 86 63"
+    "number_yoomoney": "+7 926 818 86 63",
+
+    "link_keksik": "https://m.vk.com/app6887721_-198772463",
+    "min_withdrawal": 100,
+
+    "mysql_object": {
+        "host": "188.225.42.163",
+        "port": 3306,
+        "user": "victor",
+        "password": "CD7$$3ITpO*oz560=7fTH78&1GstRn",
+        "database": "victor_bot_invest_DW",
+        "charset": "utf8mb4_general_ci"
+    }
 }

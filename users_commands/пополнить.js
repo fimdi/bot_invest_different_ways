@@ -1,4 +1,5 @@
 const { Keyboard } = require('vk-io');
+const config = require('../config.json');
 
 module.exports = (context) => 
 {
@@ -8,15 +9,16 @@ module.exports = (context) =>
             label: 'Вручную',
             color: Keyboard.POSITIVE_COLOR
         })
-        .textButton({
-            label: 'ЮMoney',
+        .urlButton({
+            label: 'Кексик',
+	        url: config.link_keksik,
             color: Keyboard.POSITIVE_COLOR,
             payload: {
                 command: 'пополнение'
             }
         })
         .textButton({
-            label: 'Кексик',
+            label: 'ЮMoney',
             color: Keyboard.NEGATIVE_COLOR,
             payload: {
                 command: 'пополнение'

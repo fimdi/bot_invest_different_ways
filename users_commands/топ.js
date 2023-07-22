@@ -2,7 +2,7 @@ const { Keyboard } = require('vk-io');
 
 module.exports = (context) => 
 {
-    context.send(`Выбирети топ:`, {
+    context.send(`Выберите топ:`, {
         keyboard: Keyboard.builder()
         .textButton({
             label: '⏳Инвесторы',
