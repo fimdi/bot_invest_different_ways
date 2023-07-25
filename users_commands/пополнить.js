@@ -9,14 +9,6 @@ module.exports = (context) =>
             label: 'Вручную',
             color: Keyboard.POSITIVE_COLOR
         })
-        .urlButton({
-            label: 'Кексик',
-	        url: config.link_keksik,
-            color: Keyboard.POSITIVE_COLOR,
-            payload: {
-                command: 'пополнение'
-            }
-        })
         .textButton({
             label: 'ЮMoney',
             color: Keyboard.NEGATIVE_COLOR,

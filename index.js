@@ -117,18 +117,21 @@ let replenishmentIsExpected = {};
 // 	res.send('OK');
 // });
 
-app.post('/keksik/payment-acceptance', (req, res) =>
-{
-	let body = req.body;
-    console.log(JSON.stringify(body));
-    if ( !isAuthenticKeksik(body) || body.type != "new_donate" || body.group != config.group_id ) return;
+// app.post('/keksik/payment-acceptance', (req, res) =>
+// {
+// 	let body = req.body;
 
-	let amount = body.donate.amount, userId = body.donate.user;
-	pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [amount, amount, userId]);
-	sendMessage(userId, `✅Перевод найден. Баланс для инвестирования пополнен на ${amount} ₽`)
+//     console.log(JSON.stringify(body));
+	
+// 	if ( body.type == "confirmation" ) return res.send(`{"status": "ok", "code": ${config.code_keksik}}`);
+//     if ( !isAuthenticKeksik(body) || body.type != "new_donate" || body.group != config.group_id ) return;
 
-    res.send(`{"status": "ok", "code": "b422d6"}`);
-});
+// 	let amount = body.donate.amount, userId = body.donate.user;
+// 	pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [amount, amount, userId]);
+// 	sendMessage(userId, `✅Перевод найден. Баланс для инвестирования пополнен на ${amount} ₽`)
+
+//     res.send(`{"status": "ok", "code": ${config.code_keksik}}`);
+// });
 
 vk.updates.on('message_new', async (context) => 
 {
