@@ -11,7 +11,7 @@ module.exports = (context) =>
         })
         .textButton({
             label: 'ЮMoney',
-            color: Keyboard.NEGATIVE_COLOR,
+            color: Keyboard.POSITIVE_COLOR,
             payload: {
                 command: 'пополнение'
             }

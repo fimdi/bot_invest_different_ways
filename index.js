@@ -95,27 +95,28 @@ async function sendMessage(id, message)
 let cache = {};
 let replenishmentIsExpected = {};
 
-// app.post('/yoomoney/payment-acceptance', (req, res) =>
-// {
-// 	const body = req.body;
-// 	if ( !utils.isAuthenticYoomoney(body) ) return;
+app.post('/yoomoney/payment-acceptance', (req, res) =>
+{
+	const body = req.body;
+	console.log(body)
+	if ( !utils.isAuthenticYoomoney(body) ) return;
 
-// 	for (id in replenishmentIsExpected)
-// 	{
-// 		if (replenishmentIsExpected[id].amount == body.amount)
-// 		{
-// 			sendMessage(id, `✅Перевод найден. Баланс для инвестирования пополнен на ${body.amount} ₽`)
+	for (id in replenishmentIsExpected)
+	{
+		if ( replenishmentIsExpected[id].amount == body.amount && replenishmentIsExpected[id].label == body.label )
+		{
+			sendMessage(id, `✅Перевод найден. Баланс для инвестирования пополнен на ${body.amount} ₽`)
 
-// 			pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [body.amount, body.amount, id]);
+			pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [body.amount, body.amount, id]);
 
-// 			clearTimeout(replenishmentIsExpected[id].timerId);
-// 			delete replenishmentIsExpected[id];
-// 			break;
-// 		}
-// 	}
+			clearTimeout(replenishmentIsExpected[id].timerId);
+			delete replenishmentIsExpected[id];
+			break;
+		}
+	}
 
-// 	res.send('OK');
-// });
+	res.send('OK');
+});
 
 // app.post('/keksik/payment-acceptance', (req, res) =>
 // {
@@ -234,9 +235,9 @@ vk.updates.on('message_new', async (context) =>
 	
 	if ( /^ЮMoney$/i.test(text) && context.messagePayload?.command == "пополнение" )
 	{
-		return context.send(`Не доступно`);
-		// cache[context.senderId] = { pastMessage: "пополнение yoomoney" };
-		// return context.send(`⬇Сколько хочешь пополнить?`);
+		// return context.send(`Не доступно`);
+		cache[context.senderId] = { pastMessage: "пополнение yoomoney" };
+		return context.send(`⬇Сколько хочешь пополнить?`);
 	}
 
 	if ( /^(📑Инвестировать|Инвестировать)$/i.test(text) )
@@ -300,7 +301,7 @@ vk.updates.on('message_new', async (context) =>
 			return require('./users_commands/функция инвестирования.js')(context, user, pool);
 
 		if ( context.state.user?.pastMessage == "пополнение yoomoney" )
-			return require('./users_commands/функция пополнения ЮMoney.js')(context, replenishmentIsExpected);
+			return require('./users_commands/пополнение ЮMoney.js')(context, replenishmentIsExpected);
 	}
 
 	if ( context.state.user?.pastMessage == "украсть" )

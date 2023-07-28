@@ -172,12 +172,26 @@ function isAuthenticKeksik(obj)
     //console.log(JSON.stringify(arr, null, 2));
 }
 
+function randomSymbolsGenerator(quantity)
+{
+    const symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
+    let res = "";
+
+    for (i = 0; i < quantity; i++)
+    {
+        res += symbols[random(0, symbols.length - 1)];
+    }
+
+    return res;
+}
+
 module.exports = {
     displayInvestmentMethod,
     rounding,
     lineEnding,
     getTop,
     random,
+    randomSymbolsGenerator,
     save,
     prettify,
     shuffle,
