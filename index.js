@@ -9,7 +9,7 @@ const CronJob = require('cron').CronJob;
 const express = require('express');
 const app = express();
 
-const PORT = 5050;
+const PORT = 5061;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -98,16 +98,18 @@ let replenishmentIsExpected = {};
 app.post('/yoomoney/payment-acceptance', (req, res) =>
 {
 	const body = req.body;
-	console.log(body)
+	console.log(body);
+	if ( req.body.test_notification ) return console.log(`Работает`);
 	if ( !utils.isAuthenticYoomoney(body) ) return;
 
 	for (id in replenishmentIsExpected)
 	{
-		if ( replenishmentIsExpected[id].amount == body.amount && replenishmentIsExpected[id].label == body.label )
+		if ( replenishmentIsExpected[id].amount == body.withdraw_amount && replenishmentIsExpected[id].label == body.label )
 		{
-			sendMessage(id, `✅Перевод найден. Баланс для инвестирования пополнен на ${body.amount} ₽`)
+			const amount = body.withdraw_amount;
+			sendMessage(id, `✅Перевод найден. Баланс для инвестирования пополнен на ${amount} ₽`)
 
-			pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [body.amount, body.amount, id]);
+			pool.query(`UPDATE users SET balanceForInvestment = balanceForInvestment + ?, replenished = replenished + ? WHERE id = ?`, [amount, amount, id]);
 
 			clearTimeout(replenishmentIsExpected[id].timerId);
 			delete replenishmentIsExpected[id];
