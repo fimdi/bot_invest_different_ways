@@ -1,27 +1,31 @@
 const utils = require('../utils.js');
+const { Keyboard } = require('vk-io');
+const sendInvestmentMethod = require('./sendInvestmentMethod.js')
 
-function generateInvestmentMethods(methods) 
-{
-    let res = [];
-    methods = utils.shuffle(methods).slice(0, 5);
+// function generateInvestmentMethods(methods) 
+// {
+//     let res = [];
+//     methods = utils.shuffle(methods).slice(0, 5);
     
-    methods.forEach(el => res.push(utils.displayInvestmentMethod(el)));
+//     methods.forEach(el => res.push(utils.displayInvestmentMethod(el)));
 
-    return res.join("\n\n");
-}
+//     return res.join("\n\n");
+// }
 
 module.exports = async (context, user, pool) => 
 {
-    let [res] = await pool.query('SELECT * FROM listInvestmentMethods');
+    let [listInvestmentMethods] = await pool.query('SELECT * FROM listInvestmentMethods');
     
-    let available = res.length - (user.usedInvestmentMethods === null ? 0 : user.usedInvestmentMethods.length);
+    let available = listInvestmentMethods.length - (user.usedInvestmentMethods === null ? 0 : user.usedInvestmentMethods.length);
     
-    context.send(
-`🚤Выберите способ инвестирования (отправте номер):
+    await context.send(
+`🚤Выберите способ инвестирования
         
 Всего для вас доступно: ${available} ${utils.lineEnding(available, ["способ", "способа", "способов"])}
 
-ПОВТОРНАЯ ИНВЕСТИЦИЯ ОБНУЛЯЕТ ПРОШЛУЮ ИНВЕСТИЦИЮ
+ПОВТОРНАЯ ИНВЕСТИЦИЯ ОБНУЛЯЕТ ПРОШЛУЮ ИНВЕСТИЦИЮ`);
 
-${generateInvestmentMethods(res)}`);
+    sendInvestmentMethod(context, 1, listInvestmentMethods, user);
+    
+
 }

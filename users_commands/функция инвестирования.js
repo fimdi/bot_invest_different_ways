@@ -1,6 +1,5 @@
-module.exports = async (context, user, pool) =>
+module.exports = async (context, user, pool, number) =>
 {
-	let number = +context.text;
 	if ( user.balanceForInvestment == 0 ) return context.send("Вам нечего инвестировать");
 	if ( user.usedInvestmentMethods.includes(number) ) return context.send("Этот способ уже использьзован вами");
 	

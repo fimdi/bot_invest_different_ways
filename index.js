@@ -185,6 +185,18 @@ vk.updates.on('message_new', async (context) =>
 	if ( /^(Начать|Start|Старт|Меню|Запуск|Привет|Хай|Здравствуйте|Hello)$/i.test(text) )
 		return require('./users_commands/меню.js')(context);
 	
+	if ( /^➡Вперёд$/i.test(text) && context.messagePayload?.nextNumber )
+		return require('./users_commands/next.js')(context, pool, user);
+
+	if ( /^⬅Назад️$/i.test(text) && context.messagePayload?.backNumber )
+		return require('./users_commands/back.js')(context, pool, user);
+
+	if ( /^✅Инвестировать$/i.test(text) && context.messagePayload?.number )
+		return require('./users_commands/функция инвестирования.js')(context, user, pool, context.messagePayload.number);
+
+	if ( /^🔢Выбрать по номеру$/i.test(text) )
+		return require('./users_commands/chooseByNumber.js')(context, pool, user);
+
 	if ( /^(🖥Профиль|Профиль)$/i.test(text) )
 		return require('./users_commands/профиль.js')(context, user, pool);
 
@@ -297,8 +309,8 @@ vk.updates.on('message_new', async (context) =>
 
 	if ( !isNaN(text) ) 
 	{
-		if ( context.state.user?.pastMessage == "инвестировать" )
-			return require('./users_commands/функция инвестирования.js')(context, user, pool);
+		// if ( context.state.user?.pastMessage == "инвестировать" )
+		// 	return require('./users_commands/функция инвестирования.js')(context, user, pool);
 
 		if ( context.state.user?.pastMessage == "пополнение yoomoney" )
 			return require('./users_commands/пополнение ЮMoney.js')(context, replenishmentIsExpected);
